@@ -313,7 +313,7 @@ NV21
 nv21ToBitmap | nv21转bitmap
 bitmapToNv21 | bitmap转nv21
 
-## 注意
+## 注意事项
 1. 该项目使用opencv-3.4.6，[点击下载](https://nchc.dl.sourceforge.net/project/opencvlibrary/3.4.6/opencv-3.4.6-android-sdk.zip)<br>
 2. NDK版本r14b，r20编译不过去，[点击下载](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.android.google.cn%2Fndk%2Fdownloads%2Folder_releases.html)
 3. 集成的时候请把licennseplate的CMakeLists.txt的第12行替换成自己的opencv-android-sdk的JNI路径
