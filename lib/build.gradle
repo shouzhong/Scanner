@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    compileOnly "com.google.zxing:core:3.3.3"
+    compileOnly project(":zbar")
+    compileOnly project(":bankcard")
+    compileOnly project(":idcard")
+    compileOnly project(":licenseplate")
+}
+
+//发布 Jcenter
+apply from: 'bintray.gradle'

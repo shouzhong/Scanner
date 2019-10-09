@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+    defaultConfig {
+        applicationId "com.shouzhong.scanner.demo"
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+    //签名配置
+    signingConfigs {
+        config {
+            keyAlias "123456"
+            keyPassword "123456"
+            storeFile file("/test.jks")
+            storePassword "123456"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.config
+        }
+        release {
+            signingConfig signingConfigs.config
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation "com.google.zxing:core:3.3.3"
+    implementation project(":lib")
+    implementation project(":zbar")
+    implementation project(":bankcard")
+    implementation project(":idcard")
+    implementation project(":licenseplate")
+//    implementation 'com.shouzhong:Scanner:1.0.1'
+//    implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
+//    implementation 'com.shouzhong:ScannerBankCardLib:1.0.0'
+//    implementation 'com.shouzhong:ScannerIdCardLib:1.0.1'
+}

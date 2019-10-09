@@ -1,0 +1,2 @@
+include ':app', ':lib', ':zbar', ':bankcard', ':idcard', ':licenseplate'
+rootProject.name='Scanner'
