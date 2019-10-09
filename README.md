@@ -14,7 +14,7 @@
     </tr>
 </table>
 
-## [apk下载](https://github.com/shouzhong/Scanner/blob/master/app/release/app-release.apk)
+## [ apk下载](https://github.com/shouzhong/Scanner/blob/master/app/release/app-release.apk)
 
 ## 使用
 ### 依赖
