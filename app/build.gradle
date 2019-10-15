@@ -9,6 +9,10 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
     //签名配置
     signingConfigs {
@@ -40,6 +44,7 @@ dependencies {
     implementation project(":bankcard")
     implementation project(":idcard")
     implementation project(":licenseplate")
+//    implementation project(":text")
 //    implementation 'com.shouzhong:Scanner:1.0.2'
 //    implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
 //    implementation 'com.shouzhong:ScannerBankCardLib:1.0.0'

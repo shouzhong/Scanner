@@ -51,15 +51,19 @@ public class LicensePlateUtils {
                     continue;
                 }
                 File outFile = new File(mWorkingPath, file);
-                if (outFile.exists())
-                    continue;
                 InputStream in;
                 if (0 != assetDir.length()) {
                     in = context.getAssets().open(assetDir + "/" + file);
                 } else {
                     in = context.getAssets().open(file);
                 }
-
+                int len1 = in.available();
+                int len2 = outFile.exists() ? (int) outFile.length() : 0;
+                if (outFile.exists() && len1 == len2) {
+                    in.close();
+                    continue;
+                }
+                if (outFile.exists()) outFile.delete();
                 OutputStream out = new FileOutputStream(outFile);
                 // Transfer bytes from in to out
                 byte[] buf = new byte[1024];

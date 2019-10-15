@@ -48,6 +48,7 @@ public class ScannerActivity extends AppCompatActivity {
         scannerView.setShouldAdjustFocusArea(true);
         scannerView.setViewFinder(new ViewFinder(this));
         scannerView.setSaveBmp(true);
+        scannerView.setRotateDegree90Recognition(true);
         scannerView.setCallback(new Callback() {
             @Override
             public void result(Result result) {

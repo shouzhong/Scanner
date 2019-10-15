@@ -17,6 +17,8 @@ import com.google.zxing.Result;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.shouzhong.bankcard.BankCardUtils;
+import com.shouzhong.idcard.IdCardUtils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
 import com.wintone.bankcard.BankCardAPI;
 
@@ -26,12 +28,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import exocr.exocrengine.EXOCREngine;
-
 /**
  * Created by Administrator on 2018/07/31.
- *
- *
  */
 
 public class ScannerUtils {
@@ -66,7 +64,8 @@ public class ScannerUtils {
             BinaryBitmap binaryBitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
             Result result = reader.decode(binaryBitmap, hints);//开始解析
             return result.getText();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         Matrix m = new Matrix();
         m.setRotate(90, (float) bmp.getWidth() / 2, (float) bmp.getHeight() / 2);
         bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), m, true);
@@ -92,32 +91,28 @@ public class ScannerUtils {
         if (bmp == null) return null;
         int width = bmp.getWidth();
         int height = bmp.getHeight();
-        BankCardAPI api = new BankCardAPI();
-        api.WTInitCardKernal("", 0);
-        api.WTSetROI(new int[]{0, 0, width, height}, width, height);
-        byte[] data = Utils.bitmapToNv21(bmp, width, height);
-        int[] borders = new int[4];
-        char[] resultData = new char[30];
-        int[] picture = new int[32000];
-        int result = api.RecognizeNV21(data, width, height, borders, resultData, resultData.length, new int[1], picture);
-        if (result != 0) {
+        int w = width % 2 == 0 ? width : width - 1;
+        int h = height % 2 == 0 ? height : height - 1;
+        BankCardAPI api = BankCardUtils.init();
+        try {
+            byte[] data = Utils.bitmapToNv21(bmp, width, height);
+            String s = BankCardUtils.decode(api, data, w, h);
+            if (TextUtils.isEmpty(s)) throw new Exception("failure");
+            BankCardUtils.release(api);
+            return s;
+        } catch (Exception e) {}
+        try {
             Matrix m = new Matrix();
             m.setRotate(90, width / 2, height / 2);
             bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, m, true);
-            data = Utils.bitmapToNv21(bmp, height, width);
-            api.WTSetROI(new int[]{0, 0, height, width}, height, width);
-            result = api.RecognizeNV21(data, height, width, borders, resultData, resultData.length, new int[1], picture);
-            if (result != 0) {
-                api.WTUnInitCardKernal();
-                return null;
-            }
-        }
-        api.WTUnInitCardKernal();
-        final StringBuffer sb = new StringBuffer();
-        for (char c : resultData) {
-            if (c >= '0' && c <= '9') sb.append(c);
-        }
-        return sb.toString();
+            byte[] data = Utils.bitmapToNv21(bmp, height, width);
+            String s = BankCardUtils.decode(api, data, w, h);
+            if (TextUtils.isEmpty(s)) throw new Exception("failure");
+            BankCardUtils.release(api);
+            return s;
+        } catch (Exception e) {}
+        BankCardUtils.release(api);
+        throw new Exception("failure");
     }
 
     /**
@@ -128,17 +123,17 @@ public class ScannerUtils {
      */
     public static com.shouzhong.scanner.Result decodeIdCard(Context context, Bitmap bmp) throws Exception {
         if (bmp == null) return null;
-        boolean boo = Utils.initDict(context);
-        if (!boo) Utils.initDict(context);
+        boolean boo = IdCardUtils.initDict(context);
+        if (!boo) throw new Exception("init failure");
         final byte[] obtain = new byte[4096];
-        int len = EXOCREngine.nativeRecoIDCardBitmap(bmp, obtain, obtain.length);
+        int len = IdCardUtils.decode(bmp, obtain);
         if (len <= 0) {
             Matrix m = new Matrix();
             m.setRotate(90, (float) bmp.getWidth() / 2, (float) bmp.getHeight() / 2);
             bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), m, true);
-            len = EXOCREngine.nativeRecoIDCardBitmap(bmp, obtain, obtain.length);
+            len = IdCardUtils.decode(bmp, obtain);
         }
-        Utils.clearDict();
+        IdCardUtils.clearDict();
         if (len <= 0) return null;
         return Utils.decodeIdCard(obtain, len);
     }

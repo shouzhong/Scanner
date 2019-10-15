@@ -18,6 +18,7 @@ dependencies {
     compileOnly project(":bankcard")
     compileOnly project(":idcard")
     compileOnly project(":licenseplate")
+//    compileOnly project(":text")
 }
 
 //发布 Jcenter

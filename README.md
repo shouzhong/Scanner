@@ -19,7 +19,7 @@
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.0.2'
+implementation 'com.shouzhong:Scanner:1.0.3'
 ```
 以下选择自己需要的
 ```
@@ -28,11 +28,11 @@ implementation 'com.google.zxing:core:3.3.3'
 // zbar
 implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
 // 银行卡识别
-implementation 'com.shouzhong:ScannerBankCardLib:1.0.0'
+implementation 'com.shouzhong:ScannerBankCardLib:1.0.1'
 // 身份证识别
-implementation 'com.shouzhong:ScannerIdCardLib:1.0.1'
+implementation 'com.shouzhong:ScannerIdCardLib:1.0.2'
 // 车牌识别
-implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.0'
+implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.1'
 ```
 ### 代码
 基本使用
@@ -293,6 +293,7 @@ toggleFlash | 切换闪光灯的点亮状态
 isFlashOn | 闪光灯是否被点亮
 setShouldAdjustFocusArea | 设置是否要根据扫码框的位置去调整对焦区域的位置，部分手机不支持，默认false
 setSaveBmp | 设置是否保存条码图片，默认false
+setRotateDegree90Recognition | 是否在原来识别的图像基础上旋转90度继续识别，默认false
 
 ScannerUtils
 

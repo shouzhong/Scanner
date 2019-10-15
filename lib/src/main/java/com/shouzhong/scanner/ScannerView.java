@@ -21,6 +21,8 @@ import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import com.shouzhong.bankcard.BankCardUtils;
+import com.shouzhong.idcard.IdCardUtils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
 import com.wintone.bankcard.BankCardAPI;
 
@@ -35,8 +37,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import exocr.exocrengine.EXOCREngine;
 
 /**
  * 扫描页面
@@ -63,6 +63,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     private NV21 nv21;
     private int[] previewSize;
     private boolean isSaveBmp;
+    private boolean isRotateDegree90Recognition = false;
     private boolean enableZXing = false;
     private boolean enableZBar = false;
     private boolean enableBankCard = false;
@@ -100,19 +101,43 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             //根据ViewFinderView和preview的尺寸之比，缩放扫码区域
             Rect rect = getScaledRect(previewWidth, previewHeight);
             byte[] tempData = null;
+            byte[] tempData2 = null;
             int width = 0;
             int height = 0;
+            int width2 = 0;
+            int height2 = 0;
             if (scanner != null || enableZXing || enableBankCard || enableIdCard) {
-                tempData = Utils.clipNV21(data, previewWidth, previewHeight, rect.left, rect.top, rect.width(), rect.height());
-                if (isRotated) tempData = Utils.rotateNV21Degree90(tempData, rect.width(), rect.height());
-                width = isRotated ? rect.height() : rect.width();
-                height = isRotated ? rect.width() : rect.height();
+                byte[] temp = Utils.clipNV21(data, previewWidth, previewHeight, rect.left, rect.top, rect.width(), rect.height());
+                if (isRotated) {
+                    tempData = Utils.rotateNV21Degree90(temp, rect.width(), rect.height());
+                    width = rect.height();
+                    height = rect.width();
+                    if (isRotateDegree90Recognition) {
+                        tempData2 = temp;
+                        width2 = rect.width();
+                        height2 = rect.height();
+                    }
+                } else {
+                    tempData = temp;
+                    width = rect.width();
+                    height = rect.height();
+                    if (isRotateDegree90Recognition) {
+                        tempData2 = Utils.rotateNV21Degree90(temp, rect.width(), rect.height());
+                        width2 = rect.height();
+                        height2 = rect.width();
+                    }
+                }
             }
             Result result = null;
             if (scanner != null && result == null) {
                 try {
                     result = scanner.scan(tempData, width, height);
                 } catch (Exception e) {}
+                if (result == null && isRotateDegree90Recognition) {
+                    try {
+                        result = scanner.scan(tempData2, width2, height2);
+                    } catch (Exception e) {}
+                }
             }
             if (enableZBar && result == null) {
                 try {
@@ -136,60 +161,79 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             }
             if (enableZXing && result == null) {
                 try {
-                    PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(data, previewWidth, previewHeight, rect.left, rect.top, rect.width(), rect.height(), false);
-                    String s = getMultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints0).getText();
-                    result = new Result();
-                    result.type = Result.TYPE_CODE;
-                    result.text = s;
-                } catch (Exception e) { }
-            }
-            if (enableZXing && result == null) {
-                try {
                     PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(tempData, width, height, 0, 0, width, height, false);
                     String s = getMultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints0).getText();
                     result = new Result();
                     result.type = Result.TYPE_CODE;
                     result.text = s;
                 } catch (Exception e) {}
+                if (result == null && isRotateDegree90Recognition) {
+                    try {
+                        PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(tempData2, width2, height2, 0, 0, width2, height2, false);
+                        String s = getMultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints0).getText();
+                        result = new Result();
+                        result.type = Result.TYPE_CODE;
+                        result.text = s;
+                    } catch (Exception e) {}
+                }
             }
             if (enableBankCard && result == null) {
                 try {
-                    int[] borders = new int[4];
-                    char[] resultData = new char[30];
-                    int[] picture = new int[32000];
-                    getBankCardAPI().WTSetROI(new int[]{0, 0, width, height}, width, height);
-                    int code = getBankCardAPI().RecognizeNV21(tempData, width, height, borders, resultData, 30, new int[1], picture);
-                    if (code == 0 && borders[0] == 1 && borders[1] == 1&& borders[2] == 1&& borders[3] == 1) {
-                        final StringBuffer sb = new StringBuffer();
-                        for (char c : resultData) {
-                            if (c >= '0' && c <= '9') sb.append(c);
-                        }
+                    String s = BankCardUtils.decode(getBankCardAPI(), tempData, width, height);
+                    if (!TextUtils.isEmpty(s)) {
                         result = new Result();
                         result.type = Result.TYPE_BANK_CARD;
-                        result.text = sb.toString();
+                        result.text = s;
                     }
                 } catch (Exception e) {}
+                if (result == null && isRotateDegree90Recognition) {
+                    try {
+                        String s = BankCardUtils.decode(getBankCardAPI(), tempData2, width2, height2);
+                        if (!TextUtils.isEmpty(s)) {
+                            result = new Result();
+                            result.type = Result.TYPE_BANK_CARD;
+                            result.text = s;
+                        }
+                    } catch (Exception e) {}
+                }
             }
             if (enableIdCard && result == null) {
                 try {
-                    if (!isIdCardInit) isIdCardInit = Utils.initDict(getContext());
+                    if (!isIdCardInit) isIdCardInit = IdCardUtils.initDict(getContext());
                     if (!isIdCardInit) throw new Exception("failure");
                     byte[] obtain = new byte[4396];
-                    int len = EXOCREngine.nativeRecoIDCardRawdat(tempData, width, height, width, 1, obtain, obtain.length);
+                    int len = IdCardUtils.decode(tempData, width, height, obtain);
                     if (len > 0) result = Utils.decodeIdCard(obtain, len);
                 } catch (Exception e) {}
+                if (result == null && isRotateDegree90Recognition) {
+                    try {
+                        if (!isIdCardInit) isIdCardInit = IdCardUtils.initDict(getContext());
+                        if (!isIdCardInit) throw new Exception("failure");
+                        byte[] obtain = new byte[4396];
+                        int len = IdCardUtils.decode(tempData2, width2, height2, obtain);
+                        if (len > 0) result = Utils.decodeIdCard(obtain, len);
+                    } catch (Exception e) {}
+                }
             }
             if (enableLicensePlate && result == null) {
                 try {
                     String s = LicensePlateUtils.recognize(tempData, width, height, getLicensePlatId());
-//                    Bitmap bmp = getNV21().nv21ToBitmap(tempData, width, height);
-//                    String s = LicensePlateUtils.recognize(bmp, getLicensePlatId());
                     if (!TextUtils.isEmpty(s)) {
                         result = new Result();
                         result.type = Result.TYPE_LICENSE_PLATE;
                         result.text = s;
                     }
                 } catch (Exception e) {}
+                if (result == null && isRotateDegree90Recognition) {
+                    try {
+                        String s = LicensePlateUtils.recognize(tempData2, width2, height2, getLicensePlatId());
+                        if (!TextUtils.isEmpty(s)) {
+                            result = new Result();
+                            result.type = Result.TYPE_LICENSE_PLATE;
+                            result.text = s;
+                        }
+                    } catch (Exception e) {}
+                }
             }
             if (result == null) {
                 getOneMoreFrame();
@@ -385,6 +429,15 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     }
 
     /**
+     * 是否在原来识别的图像基础上旋转90度继续识别
+     *
+     * @param b
+     */
+    public void setRotateDegree90Recognition(boolean b) {
+        this.isRotateDegree90Recognition = b;
+    }
+
+    /**
      * 是否使用ZXing识别
      *
      * @param enableZXing
@@ -500,8 +553,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
      */
     private synchronized BankCardAPI getBankCardAPI() {
         if (bankCardAPI == null) {
-            bankCardAPI = new BankCardAPI();
-            bankCardAPI.WTInitCardKernal("", 0);
+            bankCardAPI = BankCardUtils.init();
         }
         return bankCardAPI;
     }
@@ -559,11 +611,11 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         multiFormatReader = null;
         imageScanner = null;
         if (bankCardAPI != null) {
-            bankCardAPI.WTUnInitCardKernal();
+            BankCardUtils.release(bankCardAPI);
             bankCardAPI = null;
         }
         if (isIdCardInit) {
-            Utils.clearDict();
+            IdCardUtils.clearDict();
             isIdCardInit = false;
         }
         if (licensePlateId != 0) {
