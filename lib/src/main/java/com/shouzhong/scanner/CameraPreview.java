@@ -29,6 +29,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private boolean previewing = false;//是否正在预览
     private boolean surfaceCreated = false;//surface是否已创建
 
+    private int displayOrientation = -1;
     private int mPreviewWidth;
     private int mPreviewHeight;
 
@@ -57,7 +58,6 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int width = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
         int height = getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec);
-//        setOptimalPreviewSize(width, height);
         int o = getResources().getConfiguration().orientation;
         float ratio = o == Configuration.ORIENTATION_PORTRAIT ? mPreviewHeight * 1f / mPreviewWidth : mPreviewWidth * 1f / mPreviewHeight;
         float r = width * 1f / height;
@@ -107,15 +107,17 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
             cameraWrapper.camera.setDisplayOrientation(getDisplayOrientation());//设置相机预览图像的旋转角度
             cameraWrapper.camera.setOneShotPreviewCallback(previewCallback);//设置一次性的预览回调
             cameraWrapper.camera.startPreview();//开始预览
-            previewing = true;
-            try {
-                cameraWrapper.camera.cancelAutoFocus(); // 先要取消掉进程中所有的聚焦功能
-            } catch (Exception e) {}
+        } catch (Exception e) {}
+        previewing = true;
+        try {
+            cameraWrapper.camera.cancelAutoFocus(); // 先要取消掉进程中所有的聚焦功能
+        } catch (Exception e) {}
+        try {
             startAutoFocus1();
+        } catch (Exception e) {}
+        try {
             startAutoFocus2();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) {}
     }
 
     /**
@@ -123,6 +125,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
      */
     void stopCameraPreview() {
         previewing = false;
+        displayOrientation = -1;
         if (cameraWrapper != null) {
             try {
                 if (sensorController != null) {
@@ -192,6 +195,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
      */
     int getDisplayOrientation() {
         if (cameraWrapper == null) return 0;
+        if (displayOrientation != -1) return displayOrientation;
         Camera.CameraInfo info = new Camera.CameraInfo();
         if (cameraWrapper.cameraId == -1) {
             Camera.getCameraInfo(Camera.CameraInfo.CAMERA_FACING_BACK, info);
@@ -223,6 +227,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
-        return result;
+        displayOrientation = result;
+        return displayOrientation;
     }
 }

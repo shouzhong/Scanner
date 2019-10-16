@@ -60,7 +60,6 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     private BankCardAPI bankCardAPI;
     private Callback callback;
     private IScanner scanner;
-    private NV21 nv21;
     private int[] previewSize;
     private boolean isSaveBmp;
     private boolean isRotateDegree90Recognition = false;
@@ -93,9 +92,8 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (callback == null) return;
         try {
-            Camera.Parameters parameters = camera.getParameters();
-            int previewWidth = parameters.getPreviewSize().width;
-            int previewHeight = parameters.getPreviewSize().height;
+            int previewWidth = previewSize[0];
+            int previewHeight = previewSize[1];
             int  rotationCount = getRotationCount();
             boolean isRotated = rotationCount == 1 || rotationCount == 3;
             //根据ViewFinderView和preview的尺寸之比，缩放扫码区域
@@ -108,23 +106,25 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             int height2 = 0;
             if (scanner != null || enableZXing || enableBankCard || enableIdCard) {
                 byte[] temp = Utils.clipNV21(data, previewWidth, previewHeight, rect.left, rect.top, rect.width(), rect.height());
+                int w = rect.width() / 2 * 2;
+                int h = rect.height() / 2 * 2;
                 if (isRotated) {
-                    tempData = Utils.rotateNV21Degree90(temp, rect.width(), rect.height());
-                    width = rect.height();
-                    height = rect.width();
+                    tempData = Utils.rotateNV21Degree90(temp, w, h);
+                    width = h;
+                    height = w;
                     if (isRotateDegree90Recognition) {
                         tempData2 = temp;
-                        width2 = rect.width();
-                        height2 = rect.height();
+                        width2 = w;
+                        height2 = h;
                     }
                 } else {
                     tempData = temp;
-                    width = rect.width();
-                    height = rect.height();
+                    width = w;
+                    height = h;
                     if (isRotateDegree90Recognition) {
-                        tempData2 = Utils.rotateNV21Degree90(temp, rect.width(), rect.height());
-                        width2 = rect.height();
-                        height2 = rect.width();
+                        tempData2 = Utils.rotateNV21Degree90(temp, w, h);
+                        width2 = h;
+                        height2 = w;
                     }
                 }
             }
@@ -166,7 +166,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                     result = new Result();
                     result.type = Result.TYPE_CODE;
                     result.text = s;
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
                 if (result == null && isRotateDegree90Recognition) {
                     try {
                         PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(tempData2, width2, height2, 0, 0, width2, height2, false);
@@ -174,7 +176,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         result = new Result();
                         result.type = Result.TYPE_CODE;
                         result.text = s;
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                 }
             }
             if (enableBankCard && result == null) {
@@ -185,7 +189,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         result.type = Result.TYPE_BANK_CARD;
                         result.text = s;
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
                 if (result == null && isRotateDegree90Recognition) {
                     try {
                         String s = BankCardUtils.decode(getBankCardAPI(), tempData2, width2, height2);
@@ -194,7 +200,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                             result.type = Result.TYPE_BANK_CARD;
                             result.text = s;
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                 }
             }
             if (enableIdCard && result == null) {
@@ -204,7 +212,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                     byte[] obtain = new byte[4396];
                     int len = IdCardUtils.decode(tempData, width, height, obtain);
                     if (len > 0) result = Utils.decodeIdCard(obtain, len);
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
                 if (result == null && isRotateDegree90Recognition) {
                     try {
                         if (!isIdCardInit) isIdCardInit = IdCardUtils.initDict(getContext());
@@ -212,7 +222,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         byte[] obtain = new byte[4396];
                         int len = IdCardUtils.decode(tempData2, width2, height2, obtain);
                         if (len > 0) result = Utils.decodeIdCard(obtain, len);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                 }
             }
             if (enableLicensePlate && result == null) {
@@ -223,7 +235,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         result.type = Result.TYPE_LICENSE_PLATE;
                         result.text = s;
                     }
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
                 if (result == null && isRotateDegree90Recognition) {
                     try {
                         String s = LicensePlateUtils.recognize(tempData2, width2, height2, getLicensePlatId());
@@ -232,7 +246,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                             result.type = Result.TYPE_LICENSE_PLATE;
                             result.text = s;
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
                 }
             }
             if (result == null) {
@@ -262,6 +278,8 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                 }
             });
         } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
             getOneMoreFrame();
         }
     }
@@ -567,13 +585,11 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         return licensePlateId;
     }
 
-    private synchronized NV21 getNV21() {
-        if (nv21 == null) nv21 = new NV21(getContext());
-        return nv21;
+    void setCameraWrapper(CameraWrapper cameraWrapper) {
+        this.cameraWrapper = cameraWrapper;
     }
 
-    void setupCameraPreview(final CameraWrapper cameraWrapper) {
-        this.cameraWrapper = cameraWrapper;
+    void setupCameraPreview() {
         if (this.cameraWrapper == null) return;
         removeAllViews();
         cameraPreview = new CameraPreview(getContext(), previewSize[0], previewSize[1], cameraWrapper, this, this);
@@ -596,14 +612,18 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
      */
     private void stopCamera() {
         if (cameraHandlerThread != null) {
-            cameraHandlerThread.quit();
-            cameraHandlerThread = null;
+            try {
+                cameraHandlerThread.quit();
+                cameraHandlerThread = null;
+            } catch (Exception e) {}
         }
         if (cameraWrapper != null) {
-            cameraPreview.stopCameraPreview();//停止相机预览并置空各种回调
-            cameraPreview = null;
-            cameraWrapper.camera.release();//释放资源
-            cameraWrapper = null;
+            try {
+                cameraPreview.stopCameraPreview();//停止相机预览并置空各种回调
+                cameraPreview = null;
+                cameraWrapper.camera.release();//释放资源
+                cameraWrapper = null;
+            } catch (Exception e) {}
         }
         previewSize = null;
         scaledRect = null;
@@ -611,18 +631,23 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         multiFormatReader = null;
         imageScanner = null;
         if (bankCardAPI != null) {
-            BankCardUtils.release(bankCardAPI);
-            bankCardAPI = null;
+            try {
+                BankCardUtils.release(bankCardAPI);
+                bankCardAPI = null;
+            } catch (Exception e) {}
         }
         if (isIdCardInit) {
-            IdCardUtils.clearDict();
-            isIdCardInit = false;
+            try {
+                IdCardUtils.clearDict();
+                isIdCardInit = false;
+            } catch (Exception e) {}
         }
         if (licensePlateId != 0) {
-            LicensePlateUtils.releaseRecognizer(licensePlateId);
-            licensePlateId = 0;
+            try {
+                LicensePlateUtils.releaseRecognizer(licensePlateId);
+                licensePlateId = 0;
+            } catch (Exception e) {}
         }
-        nv21 = null;
         removeAllViews();
     }
 
@@ -653,10 +678,6 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                 scaledRect.top = scaledRect.top * height / viewFinderViewHeight;
                 scaledRect.bottom = scaledRect.bottom * height / viewFinderViewHeight;
             }
-//            scaledRect.left = (int) (0.8f * scaledRect.left);
-//            scaledRect.right = (int) (1.25f * scaledRect.right);
-//            scaledRect.top = (int) (0.8f * scaledRect.top);
-//            scaledRect.bottom = (int) (1.25f * scaledRect.bottom);
             int rotationCount = getRotationCount();
             int left = scaledRect.left;
             int top = scaledRect.top;
@@ -697,31 +718,27 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     /**
      * 找到一个合适的previewSize（根据控件的尺寸）
      *
-     * @param camera
      */
-    void setOptimalPreviewSize(Camera camera) {
-        if (previewSize != null) return;
+    void setOptimalPreviewSize() {
+        if (previewSize != null || cameraWrapper == null) return;
+        int w, h;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            w = getMeasuredWidth();
+            h = getMeasuredHeight();
+        } else {
+            w = getMeasuredHeight();
+            h = getMeasuredWidth();
+        }
         try {
-            if (camera == null) throw new NullPointerException("camera is null");
+            if (cameraWrapper.camera == null) throw new NullPointerException("camera is null");
             //相机图像默认都是横屏(即宽>高)
-            List<Camera.Size> sizes = camera.getParameters().getSupportedPreviewSizes();
+            List<Camera.Size> sizes = cameraWrapper.camera.getParameters().getSupportedPreviewSizes();
             if (sizes == null) throw new NullPointerException("size is null");
-            int w, h;
-            int width = getMeasuredWidth();
-            int height = getMeasuredHeight();
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                w = width;
-                h = height;
-            } else {
-                w = height;
-                h = width;
-            }
             double targetRatio = w * 1.0 / h;
             Camera.Size optimalSize = null;
             double minDiff = Double.MAX_VALUE;
             double aspectTolerance = Double.MAX_VALUE;
             int targetHeight = h;
-
             // 获取最佳尺寸
             for (Camera.Size size : sizes) {
                 double ratio = size.width * 1.0 / size.height;
@@ -734,10 +751,12 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             }
             previewSize = new int[] {optimalSize.width, optimalSize.height};
         } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
             DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
             int width = dm.widthPixels > dm.heightPixels ? dm.widthPixels : dm.heightPixels;	// 屏幕宽度
             int height = dm.widthPixels > dm.heightPixels ? dm.heightPixels : dm.widthPixels;	// 屏幕高度
-            previewSize = new int[] {width , height};
+            if (w * 1.0f / h <= 1.0f)
+            previewSize = w * 1.0f / h > 1.0f ? new int[] {width , height} : new int[] {height, height};
         }
     }
 }

@@ -38,12 +38,12 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation "com.google.zxing:core:3.3.3"
+//    implementation "com.google.zxing:core:3.3.3"
     implementation project(":lib")
-    implementation project(":zbar")
-    implementation project(":bankcard")
+//    implementation project(":zbar")
+//    implementation project(":bankcard")
     implementation project(":idcard")
-    implementation project(":licenseplate")
+//    implementation project(":licenseplate")
 //    implementation project(":text")
 //    implementation 'com.shouzhong:Scanner:1.0.3'
 //    implementation 'com.shouzhong:ScannerZBarLib:1.0.0'

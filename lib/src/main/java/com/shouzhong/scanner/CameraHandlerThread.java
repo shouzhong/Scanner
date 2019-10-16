@@ -1,6 +1,5 @@
 package com.shouzhong.scanner;
 
-import android.hardware.Camera;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -23,15 +22,17 @@ class CameraHandlerThread extends HandlerThread {
         localHandler.post(new Runnable() {
             @Override
             public void run() {
-                final Camera camera = CameraUtils.getCamera(cameraId);//打开camera
-                if (camera != null) mScannerView.setOptimalPreviewSize(camera);
+                mScannerView.setCameraWrapper(CameraWrapper.getWrapper(CameraUtils.getCamera(cameraId), cameraId));
                 Handler mainHandler = new Handler(Looper.getMainLooper());//切换到主线程
-                mainHandler.post(new Runnable() {
+                mainHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mScannerView.setupCameraPreview(CameraWrapper.getWrapper(camera, cameraId));
+                        try {
+                            mScannerView.setOptimalPreviewSize();
+                            mScannerView.setupCameraPreview();
+                        } catch (Exception e) {}
                     }
-                });
+                }, 50);
             }
         });
     }
