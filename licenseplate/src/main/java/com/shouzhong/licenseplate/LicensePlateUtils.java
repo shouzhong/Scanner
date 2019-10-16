@@ -2,6 +2,7 @@ package com.shouzhong.licenseplate;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,7 +72,6 @@ public class LicensePlateUtils {
                 while ((len = in.read(buf)) > 0) {
                     out.write(buf, 0, len);
                 }
-
                 in.close();
                 out.close();
             } catch (IOException e) {

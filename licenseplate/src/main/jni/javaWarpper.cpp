@@ -66,11 +66,11 @@ Java_com_shouzhong_licenseplate_PlateRecognition_recognize(
         JNIEnv *env, jclass cls,
         jbyteArray yuv, jint width, jint height, jlong object_pr) {
     pr::PipelinePR *PR = (pr::PipelinePR *) object_pr;
-    jbyte * pBuf = env->GetByteArrayElements(yuv, 0);
-    cv::Mat image(height + height/2, width, CV_8UC1, (unsigned char *)pBuf);	//注意这里是height+height/2
-    cv::Mat mBgr;
-    cv::cvtColor(image, mBgr, CV_YUV2BGR_NV21);
+    jbyte *pBuf = env->GetByteArrayElements(yuv, 0);
     try {
+        cv::Mat image(height + height / 2, width, CV_8UC1, (unsigned char *)pBuf);	//注意这里是height+height/2
+        cv::Mat mBgr;
+        cv::cvtColor(image, mBgr, CV_YUV2BGR_NV21);
         //1表示SEGMENTATION_BASED_METHOD在方法里有说明
         std::vector<pr::PlateInfo> list_res = PR->RunPiplineAsImage(mBgr, pr::SEGMENTATION_FREE_METHOD);
         std::string concat_results;
@@ -91,31 +91,31 @@ JNIEXPORT jstring JNICALL
 Java_com_shouzhong_licenseplate_PlateRecognition_recognizeBmp(
         JNIEnv *env, jclass cls,
         jobject bitmap, jlong object_pr) {
-    pr::PipelinePR *PR = (pr::PipelinePR *) object_pr;
-    cv::Mat mBgr;
-    AndroidBitmapInfo info;
-    AndroidBitmap_getInfo(env, bitmap, &info);
-    void * pixels;
-    //锁定 bitmap
-    AndroidBitmap_lockPixels(env, bitmap, &pixels);
-
-    if(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888){ //bitmap
-        cv::Mat tmp(info.height, info.width, CV_8UC4, pixels);
-        cvtColor(tmp, mBgr, CV_RGBA2BGR);
-        tmp.release();
-    }else if(info.format == ANDROID_BITMAP_FORMAT_RGB_565){
-        cv::Mat tmp(info.height, info.width, CV_8UC2, pixels);
-        cvtColor(tmp, mBgr, CV_BGR5652BGR);
-        tmp.release();
-    }
-    //解锁 bitmap
-    AndroidBitmap_unlockPixels(env, bitmap);
     try {
+        pr::PipelinePR *PR = (pr::PipelinePR *) object_pr;
+        cv::Mat mBgr;
+        AndroidBitmapInfo info;
+        AndroidBitmap_getInfo(env, bitmap, &info);
+        void * pixels;
+        //锁定 bitmap
+        AndroidBitmap_lockPixels(env, bitmap, &pixels);
+
+        if(info.format == ANDROID_BITMAP_FORMAT_RGBA_8888){ //bitmap
+            cv::Mat tmp(info.height, info.width, CV_8UC4, pixels);
+            cvtColor(tmp, mBgr, CV_RGBA2BGR);
+            tmp.release();
+        }else if(info.format == ANDROID_BITMAP_FORMAT_RGB_565){
+            cv::Mat tmp(info.height, info.width, CV_8UC2, pixels);
+            cvtColor(tmp, mBgr, CV_BGR5652BGR);
+            tmp.release();
+        }
+        //解锁 bitmap
+        AndroidBitmap_unlockPixels(env, bitmap);
         //1表示SEGMENTATION_BASED_METHOD在方法里有说明
         std::vector<pr::PlateInfo> list_res = PR->RunPiplineAsImage(mBgr, pr::SEGMENTATION_FREE_METHOD);
         std::string concat_results;
         for (auto one:list_res) {
-            if (one.confidence > 0.85)
+            if (one.confidence > 0.75)
                 concat_results += one.getPlateName() + ",";
         }
         concat_results = concat_results.substr(0, concat_results.size() - 1);
