@@ -111,7 +111,6 @@ public class IdCardUtils {
             while ((length = myInput.read(buffer)) > 0) {
                 myOutput.write(buffer, 0, length);
             }
-//            myOutput.flush();
             myOutput.close();
             myInput.close();
             return true;

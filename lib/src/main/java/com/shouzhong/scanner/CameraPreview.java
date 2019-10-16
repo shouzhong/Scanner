@@ -25,6 +25,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SensorController sensorController;
     private Camera.AutoFocusCallback autoFocusCallback;
 
+    private boolean isAutoFocus = false;// 是否在对焦
     private boolean previewing = false;//是否正在预览
     private boolean surfaceCreated = false;//surface是否已创建
 
@@ -67,28 +68,8 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!previewing) return super.onTouchEvent(event);
-        try {
-            cameraWrapper.camera.cancelAutoFocus();
-            Camera.Parameters parameters = cameraWrapper.camera.getParameters();
-            final String currentFocusMode = parameters.getFocusMode();
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
-            cameraWrapper.camera.setParameters(parameters);
-            if (autoFocusCallback == null) autoFocusCallback = new Camera.AutoFocusCallback() {
-                @Override
-                public void onAutoFocus(boolean success, Camera camera) {
-                    if (previewing && cameraWrapper != null) {
-                        cameraWrapper.camera.cancelAutoFocus();
-                        Camera.Parameters parameters = cameraWrapper.camera.getParameters();
-                        parameters.setFocusMode(currentFocusMode);
-                        cameraWrapper.camera.setParameters(parameters);
-                    }
-                }
-            };
-            if (cameraWrapper != null) cameraWrapper.camera.autoFocus(autoFocusCallback);
-            return true;
-        } catch (Exception e) {}
-        return super.onTouchEvent(event);
+        if (!autoFocus()) return super.onTouchEvent(event);
+        return true;
     }
 
     //--------------------------------------------------------------------------------------------------
@@ -121,44 +102,17 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
             //设置相机参数
             Camera.Parameters parameters = cameraWrapper.camera.getParameters();
             parameters.setPreviewSize(mPreviewWidth, mPreviewHeight);
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             cameraWrapper.camera.setParameters(parameters);
-            cameraWrapper.camera.cancelAutoFocus(); // 先要取消掉进程中所有的聚焦功能
             cameraWrapper.camera.setPreviewDisplay(getHolder());//设置在当前surfaceView中进行相机预览
             cameraWrapper.camera.setDisplayOrientation(getDisplayOrientation());//设置相机预览图像的旋转角度
             cameraWrapper.camera.setOneShotPreviewCallback(previewCallback);//设置一次性的预览回调
             cameraWrapper.camera.startPreview();//开始预览
             previewing = true;
-            if (!surfaceCreated || sensorController != null) return;
-            focusAreaSetter.setAutoFocusArea();
-            sensorController = new SensorController(getContext());
-            sensorController.setDelay(500);
-            sensorController.setCallback(new SensorController.Callback() {
-                @Override
-                public void onChanged() {
-                    if (!previewing) return;
-                    try {
-                        cameraWrapper.camera.cancelAutoFocus();
-                        Camera.Parameters parameters = cameraWrapper.camera.getParameters();
-                        final String currentFocusMode = parameters.getFocusMode();
-                        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_MACRO);
-                        cameraWrapper.camera.setParameters(parameters);
-                        if (autoFocusCallback == null) autoFocusCallback = new Camera.AutoFocusCallback() {
-                            @Override
-                            public void onAutoFocus(boolean success, Camera camera) {
-                                if (previewing && cameraWrapper != null) {
-                                    cameraWrapper.camera.cancelAutoFocus();
-                                    Camera.Parameters parameters = cameraWrapper.camera.getParameters();
-                                    parameters.setFocusMode(currentFocusMode);
-                                    cameraWrapper.camera.setParameters(parameters);
-                                }
-                            }
-                        };
-                        if (cameraWrapper != null) cameraWrapper.camera.autoFocus(autoFocusCallback);
-                    } catch (Exception e) {}
-                }
-            });
-            sensorController.onStart();
+            try {
+                cameraWrapper.camera.cancelAutoFocus(); // 先要取消掉进程中所有的聚焦功能
+            } catch (Exception e) {}
+            startAutoFocus1();
+            startAutoFocus2();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -175,14 +129,59 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
                     sensorController.onStop();
                     sensorController = null;
                 }
+            } catch (Exception e) {}
+            try {
                 cameraWrapper.camera.cancelAutoFocus();
+            } catch (Exception e) {}
+            try {
                 cameraWrapper.camera.setOneShotPreviewCallback(null);
                 cameraWrapper.camera.stopPreview();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            } catch (Exception e) {}
             cameraWrapper = null;
             previewCallback = null;
+        }
+    }
+
+    void startAutoFocus1() {
+        if (!surfaceCreated) return;
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                autoFocus();
+                startAutoFocus1();
+            }
+        }, 1500);
+    }
+
+    void startAutoFocus2() {
+        if (!surfaceCreated || sensorController != null) return;
+        focusAreaSetter.setAutoFocusArea();
+        sensorController = new SensorController(getContext());
+        sensorController.setDelay(500);
+        sensorController.setCallback(new SensorController.Callback() {
+            @Override
+            public void onChanged() {
+                autoFocus();
+            }
+        });
+        sensorController.onStart();
+    }
+
+    boolean autoFocus() {
+        if (!previewing || isAutoFocus) return false;
+        isAutoFocus = true;
+        try {
+            if (autoFocusCallback == null) autoFocusCallback = new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    isAutoFocus = false;
+                }
+            };
+            if (cameraWrapper != null) cameraWrapper.camera.autoFocus(autoFocusCallback);
+            return true;
+        } catch (Exception e) {
+            isAutoFocus = false;
+            return false;
         }
     }
 

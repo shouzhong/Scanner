@@ -45,9 +45,9 @@ dependencies {
     implementation project(":idcard")
     implementation project(":licenseplate")
 //    implementation project(":text")
-//    implementation 'com.shouzhong:Scanner:1.0.2'
+//    implementation 'com.shouzhong:Scanner:1.0.3'
 //    implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
-//    implementation 'com.shouzhong:ScannerBankCardLib:1.0.0'
-//    implementation 'com.shouzhong:ScannerIdCardLib:1.0.1'
-//    implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.0'
+//    implementation 'com.shouzhong:ScannerBankCardLib:1.0.1'
+//    implementation 'com.shouzhong:ScannerIdCardLib:1.0.2'
+//    implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.1'
 }
