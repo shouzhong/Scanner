@@ -34,6 +34,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    applicationVariants.all {
+        def buildType = it.buildType.name
+
+        if (buildType == "release") {
+            it.getPackageApplication().outputDirectory = new File(project.rootDir.absolutePath + "/app/release")
+        }
+    }
 }
 
 dependencies {
