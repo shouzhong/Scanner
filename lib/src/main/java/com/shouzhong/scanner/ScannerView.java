@@ -104,28 +104,26 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             int height = 0;
             int width2 = 0;
             int height2 = 0;
-            if (scanner != null || enableZXing || enableBankCard || enableIdCard || enableLicensePlate) {
-                byte[] temp = Utils.clipNV21(data, previewWidth, previewHeight, rect.left, rect.top, rect.width(), rect.height());
-                int w = rect.width() / 2 * 2;
-                int h = rect.height() / 2 * 2;
-                if (isRotated) {
-                    tempData = Utils.rotateNV21Degree90(temp, w, h);
-                    width = h;
-                    height = w;
-                    if (isRotateDegree90Recognition) {
-                        tempData2 = temp;
-                        width2 = w;
-                        height2 = h;
-                    }
-                } else {
-                    tempData = temp;
-                    width = w;
-                    height = h;
-                    if (isRotateDegree90Recognition) {
-                        tempData2 = Utils.rotateNV21Degree90(temp, w, h);
-                        width2 = h;
-                        height2 = w;
-                    }
+            byte[] temp = Utils.clipNV21(data, previewWidth, previewHeight, rect.left, rect.top, rect.width(), rect.height());
+            int w = rect.width() / 2 * 2;
+            int h = rect.height() / 2 * 2;
+            if (isRotated) {
+                tempData = Utils.rotateNV21Degree90(temp, w, h);
+                width = h;
+                height = w;
+                if (isRotateDegree90Recognition) {
+                    tempData2 = temp;
+                    width2 = w;
+                    height2 = h;
+                }
+            } else {
+                tempData = temp;
+                width = w;
+                height = h;
+                if (isRotateDegree90Recognition) {
+                    tempData2 = Utils.rotateNV21Degree90(temp, w, h);
+                    width2 = h;
+                    height2 = w;
                 }
             }
             Result result = null;
@@ -141,9 +139,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             }
             if (enableZBar && result == null) {
                 try {
-                    Image barcode = new Image(previewWidth, previewHeight, "Y800");
-                    barcode.setData(data);
-                    barcode.setCrop(rect.left, rect.top, rect.width(), rect.height());
+                    Image barcode = new Image(width, height, "Y800");
+                    barcode.setData(tempData);
+//                    barcode.setCrop(rect.left, rect.top, rect.width(), rect.height());
                     int code = getImageScanner().scanImage(barcode);
                     if (code == 0) throw new Exception("failure");
                     // 识别成功
@@ -278,7 +276,6 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
             Log.e(TAG, e.getMessage());
             getOneMoreFrame();
         }

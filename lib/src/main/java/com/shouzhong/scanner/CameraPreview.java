@@ -109,6 +109,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
             cameraWrapper.camera.startPreview();//开始预览
         } catch (Exception e) {}
         previewing = true;
+        isAutoFocus = false;
         try {
             cameraWrapper.camera.cancelAutoFocus(); // 先要取消掉进程中所有的聚焦功能
         } catch (Exception e) {}
@@ -146,7 +147,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     void startAutoFocus1() {
-        if (!surfaceCreated) return;
+        if (!previewing) return;
         postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -157,7 +158,7 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     void startAutoFocus2() {
-        if (!surfaceCreated || sensorController != null) return;
+        if (!previewing || sensorController != null) return;
         focusAreaSetter.setAutoFocusArea();
         sensorController = new SensorController(getContext());
         sensorController.setDelay(500);

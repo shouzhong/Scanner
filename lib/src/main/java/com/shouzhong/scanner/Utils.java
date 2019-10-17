@@ -136,6 +136,7 @@ class Utils {
         if (left > width || top > height) {
             return null;
         }
+        if (width == clip_w && height == clip_h) return src;
         //取偶
         int x = left / 2 * 2, y = top / 2 * 2;
         int w = clip_w / 2 * 2, h = clip_h / 2 * 2;
