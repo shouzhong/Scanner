@@ -19,7 +19,7 @@
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.0.7'
+implementation 'com.shouzhong:Scanner:1.0.8'
 ```
 以下选择自己需要的
 ```
@@ -28,7 +28,7 @@ implementation 'com.google.zxing:core:3.3.3'
 // zbar
 implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
 // 银行卡识别
-implementation 'com.shouzhong:ScannerBankCardLib:1.0.1'
+implementation 'com.shouzhong:ScannerBankCardLib:1.0.2'
 // 身份证识别
 implementation 'com.shouzhong:ScannerIdCardLib:1.0.2'
 // 车牌识别
@@ -347,4 +347,6 @@ android {
 -dontwarn com.wintone.bankcard.**
 -keep class exocr.exocrengine.** {*;}
 -dontwarn exocr.exocrengine.**
+-keep class com.megvii.bankcard.** {*;}
+-dontwarn com.megvii.bankcard.**
 ```

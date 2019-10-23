@@ -48,6 +48,7 @@ public class ScannerActivity extends AppCompatActivity {
         scannerView.setShouldAdjustFocusArea(true);
         scannerView.setViewFinder(new ViewFinder(this));
         scannerView.setSaveBmp(true);
+        scannerView.setRotateDegree90Recognition(true);
         scannerView.setCallback(new Callback() {
             @Override
             public void result(Result result) {
@@ -84,6 +85,12 @@ public class ScannerActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableLicensePlate(isChecked);
+            }
+        });
+        scannerView.setScanner(new IScanner() {
+            @Override
+            public Result scan(byte[] data, int width, int height) throws Exception {
+                return null;
             }
         });
     }

@@ -51,6 +51,12 @@ public class ScannerUtils {
         decodeFormats.add(BarcodeFormat.CODE_39);
         decodeFormats.add(BarcodeFormat.CODE_93);
         decodeFormats.add(BarcodeFormat.CODE_128);
+        decodeFormats.add(BarcodeFormat.EAN_8);
+        decodeFormats.add(BarcodeFormat.EAN_13);
+        decodeFormats.add(BarcodeFormat.UPC_A);
+        decodeFormats.add(BarcodeFormat.UPC_E);
+        decodeFormats.add(BarcodeFormat.ITF);
+        decodeFormats.add(BarcodeFormat.RSS_14);
         hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
         hints.put(DecodeHintType.TRY_HARDER, BarcodeFormat.QR_CODE);
         hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
@@ -89,14 +95,15 @@ public class ScannerUtils {
      */
     public static String decodeBank(Bitmap bmp) throws Exception {
         if (bmp == null) return null;
+        if (bmp.getWidth() % 2 == 1 || bmp.getHeight() % 2 == 1) {
+            bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth() / 2 * 2, bmp.getHeight() / 2 * 2);
+        }
         int width = bmp.getWidth();
         int height = bmp.getHeight();
-        int w = width % 2 == 0 ? width : width - 1;
-        int h = height % 2 == 0 ? height : height - 1;
         BankCardAPI api = BankCardUtils.init();
         try {
-            byte[] data = Utils.bitmapToNv21(bmp, width, height);
-            String s = BankCardUtils.decode(api, data, w, h);
+            byte[] data = Utils.bitmapToNv21(bmp);
+            String s = BankCardUtils.decode(api, data, width, height);
             if (TextUtils.isEmpty(s)) throw new Exception("failure");
             BankCardUtils.release(api);
             return s;
@@ -105,8 +112,8 @@ public class ScannerUtils {
             Matrix m = new Matrix();
             m.setRotate(90, width / 2, height / 2);
             bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, m, true);
-            byte[] data = Utils.bitmapToNv21(bmp, height, width);
-            String s = BankCardUtils.decode(api, data, w, h);
+            byte[] data = Utils.bitmapToNv21(bmp);
+            String s = BankCardUtils.decode(api, data, width, height);
             if (TextUtils.isEmpty(s)) throw new Exception("failure");
             BankCardUtils.release(api);
             return s;

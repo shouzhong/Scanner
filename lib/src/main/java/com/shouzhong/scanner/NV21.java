@@ -52,11 +52,9 @@ public class NV21 {
      * bitmap转nv21
      *
      * @param bitmap
-     * @param width
-     * @param height
      * @return
      */
-    public byte[] bitmapToNv21(Bitmap bitmap, int width, int height) {
-        return Utils.bitmapToNv21(bitmap, width, height);
+    public byte[] bitmapToNv21(Bitmap bitmap) {
+        return Utils.bitmapToNv21(bitmap);
     }
 }

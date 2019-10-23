@@ -536,6 +536,12 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             decodeFormats.add(BarcodeFormat.CODE_39);
             decodeFormats.add(BarcodeFormat.CODE_93);
             decodeFormats.add(BarcodeFormat.CODE_128);
+            decodeFormats.add(BarcodeFormat.EAN_8);
+            decodeFormats.add(BarcodeFormat.EAN_13);
+            decodeFormats.add(BarcodeFormat.UPC_A);
+            decodeFormats.add(BarcodeFormat.UPC_E);
+            decodeFormats.add(BarcodeFormat.ITF);
+            decodeFormats.add(BarcodeFormat.RSS_14);
             hints0.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
             hints0.put(DecodeHintType.TRY_HARDER, BarcodeFormat.QR_CODE);
             hints0.put(DecodeHintType.CHARACTER_SET, "utf-8");
@@ -557,6 +563,10 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             imageScanner.setConfig(Symbol.CODE39, Config.ENABLE, 1);
             imageScanner.setConfig(Symbol.CODE93, Config.ENABLE, 1);
             imageScanner.setConfig(Symbol.CODE128, Config.ENABLE, 1);
+            imageScanner.setConfig(Symbol.EAN8, Config.ENABLE, 1);
+            imageScanner.setConfig(Symbol.EAN13, Config.ENABLE, 1);
+            imageScanner.setConfig(Symbol.UPCA, Config.ENABLE, 1);
+            imageScanner.setConfig(Symbol.UPCE, Config.ENABLE, 1);
         }
         return imageScanner;
     }

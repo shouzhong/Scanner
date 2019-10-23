@@ -2,6 +2,10 @@ package com.shouzhong.text;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
@@ -20,6 +24,35 @@ import java.util.Map;
 public class TRUtils {
 
     public static final String ASSETS_DIR = "text";
+
+    /**
+     * 对图片进行灰度化处理
+     * @param bm 原始图片
+     * @return 灰度化图片
+     */
+    private static Bitmap getGrayBitmap(Bitmap bm){
+        Bitmap bitmap = null;
+        //获取图片的宽和高
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        //创建灰度图片
+        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        //创建画布
+        Canvas canvas = new Canvas(bitmap);
+        //创建画笔
+        Paint paint = new Paint();
+        //创建颜色矩阵
+        ColorMatrix matrix = new ColorMatrix();
+        //设置颜色矩阵的饱和度:0代表灰色,1表示原图
+        matrix.setSaturation(0);
+        //颜色过滤器
+        ColorMatrixColorFilter cmcf = new ColorMatrixColorFilter(matrix);
+        //设置画笔颜色过滤器
+        paint.setColorFilter(cmcf);
+        //画图
+        canvas.drawBitmap(bm, 0,0, paint);
+        return bitmap;
+    }
 
     private static void copyAssets(Context context, String assetDir, String dir) {
         String[] files;
@@ -88,7 +121,7 @@ public class TRUtils {
      * @return String result of Service response
      * @throws IOException
      */
-    public static String post(String url, Map<String, String> params, Map<String, File> files) throws Exception {
+    private static String post(String url, Map<String, String> params, Map<String, File> files) throws Exception {
         String BOUNDARY = java.util.UUID.randomUUID().toString();
         String PREFIX = "--", LINEND = "\r\n";
         String MULTIPART_FROM_DATA = "multipart/form-data";
@@ -173,8 +206,14 @@ public class TRUtils {
         String path = context.getExternalFilesDir(ASSETS_DIR).getAbsoluteFile().getPath();
         copyAssets(context, ASSETS_DIR, path + "/tessdata");
         TessBaseAPI mTess = new TessBaseAPI();
-        mTess.init(path, "chi_sim+eng");
-        mTess.setImage(bmp);
+        mTess.init(path, "eng");
+        // 白名单
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+        // 黑名单
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-[]}{;:'\"\\|~`,./<>?");
+        //设置设别模式
+        mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO);
+        mTess.setImage(getGrayBitmap(bmp));
         String s = mTess.getUTF8Text();
         mTess.end();
         return s;

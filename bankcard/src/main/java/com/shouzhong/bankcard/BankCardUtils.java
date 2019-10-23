@@ -31,7 +31,8 @@ public class BankCardUtils {
         int[] picture = new int[32000];
         api.WTSetROI(new int[]{0, 0, width, height}, width, height);
         int code = api.RecognizeNV21(image, width, height, borders, resultData, 30, new int[1], picture);
-        if (code != 0 || borders[0] != 1 || borders[2] != 1 || borders[3] != 1) throw new Exception("failure");
+        if (code != 0) throw new Exception("failure");
+//        if (borders[0] != 1 || borders[1] != 1 || borders[2] != 1 || borders[3] != 1) throw new Exception("failure");
         final StringBuffer sb = new StringBuffer();
         for (char c : resultData) {
             if (c >= '0' && c <= '9') sb.append(c);

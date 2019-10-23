@@ -7,16 +7,11 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-
-import exocr.exocrengine.EXOCREngine;
 
 class Utils {
 
@@ -46,14 +41,13 @@ class Utils {
      * bitmap转nv21
      *
      * @param bitmap
-     * @param imgWidth
-     * @param imgHeight
      * @return
      */
-    public static byte[] bitmapToNv21(Bitmap bitmap, int imgWidth, int imgHeight) {
-        int width = imgWidth % 2 == 0 ? imgWidth : imgWidth - 1;
-        int height = imgHeight % 2 == 0 ? imgHeight : imgHeight - 1;
-        int[] argb = new int[imgWidth * imgHeight];
+    public static byte[] bitmapToNv21(Bitmap bitmap) {
+        int width = bitmap.getWidth() % 2 == 0 ? bitmap.getWidth() : bitmap.getWidth() - 1;
+        int height = bitmap.getHeight() % 2 == 0 ? bitmap.getHeight() : bitmap.getHeight() - 1;
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+        int[] argb = new int[width * height];
         bitmap.getPixels(argb, 0, width, 0, 0, width, height);
         byte[] yuv = new byte[width * height * 3 / 2];
         encodeYUV420SP(yuv, argb, width, height);

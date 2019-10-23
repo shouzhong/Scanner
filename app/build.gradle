@@ -39,7 +39,7 @@ android {
         def buildType = it.buildType.name
 
         if (buildType == "release") {
-            it.getPackageApplication().outputDirectory = new File(project.rootDir.absolutePath + "/app/release")
+            it.getPackageApplicationProvider().get().outputDirectory = new File(project.rootDir.absolutePath + "/app/release")
         }
     }
 }
