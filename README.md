@@ -1,6 +1,6 @@
 # Scanner
 ## 说明
-识别库，识别器可选择，这里有你常用的二维码/条码识别，还有你可能用到的身份证、银行卡识别、车牌，如果没有你想要的，可以自定义识别器。该库只识别扫描框内的图像，识别速率上大大提高，而且这个库比起其它的库就是解决了摄像头预览变形，预览页面高度自定义，你可以像常规一样整个页面都是预览，或者你可以选择在任何位置定义任何尺寸的预览，扫描框也高度自定义，你可以像常规一样居中，或者你也可以在预览的任何位置定义任何尺寸的扫描框（实际识别的扫描框和画上去的扫描框不一定是一样的，由你自己决定）。
+识别库，识别器可选择，这里有你常用的二维码/条码识别，还有你可能用到的身份证识别、银行卡识别、车牌识别、图片文字识别，如果没有你想要的，可以自定义识别器。该库只识别扫描框内的图像，识别速率上大大提高，而且这个库比起其它的库就是解决了摄像头预览变形，预览页面高度自定义，你可以像常规一样整个页面都是预览，或者你可以选择在任何位置定义任何尺寸的预览，扫描框也高度自定义，你可以像常规一样居中，或者你也可以在预览的任何位置定义任何尺寸的扫描框（实际识别的扫描框和画上去的扫描框不一定是一样的，由你自己决定）。
 ## 效果图
 
 <table>
@@ -19,7 +19,7 @@
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.0.8'
+implementation 'com.shouzhong:Scanner:1.0.9'
 ```
 以下选择自己需要的
 ```
@@ -33,6 +33,8 @@ implementation 'com.shouzhong:ScannerBankCardLib:1.0.2'
 implementation 'com.shouzhong:ScannerIdCardLib:1.0.2'
 // 车牌识别
 implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.1'
+// 图片文字识别
+implementation 'com.shouzhong:ScannerTextLib:1.0.0'
 ```
 ### 代码
 基本使用
@@ -299,10 +301,11 @@ ScannerUtils
 
 方法名 | 说明
 ------------ | -------------
-decodeCode | 识别二维码/条码，建议在子线程运行
-decodeBank | 识别银行卡，建议在子线程运行
-decodeIdCard | 识别身份证，建议在子线程运行
-decodeLicensePlate | 识别车牌，建议在子线程运行
+decodeCode | 二维码/条码识别，建议在子线程运行
+decodeBank | 银行卡识别，建议在子线程运行
+decodeIdCard | 身份证识别，建议在子线程运行
+decodeLicensePlate | 车牌识别，建议在子线程运行
+decodeText | 图片文字识别，请在子线程运行
 createBarcode | 条码生成，建议在子线程运行
 createQRCode | 二维码生成，建议在子线程运行
 addLogo | 往图片中间加logo
@@ -347,6 +350,4 @@ android {
 -dontwarn com.wintone.bankcard.**
 -keep class exocr.exocrengine.** {*;}
 -dontwarn exocr.exocrengine.**
--keep class com.megvii.bankcard.** {*;}
--dontwarn com.megvii.bankcard.**
 ```

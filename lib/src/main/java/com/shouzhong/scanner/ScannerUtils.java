@@ -20,6 +20,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.shouzhong.bankcard.BankCardUtils;
 import com.shouzhong.idcard.IdCardUtils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
+import com.shouzhong.text.TextRecognition;
 import com.wintone.bankcard.BankCardAPI;
 
 import java.util.ArrayList;
@@ -146,7 +147,7 @@ public class ScannerUtils {
     }
 
     /**
-     * 车牌识别
+     * 车牌识别，建议在子线程运行
      *
      * @param context
      * @param bmp
@@ -160,6 +161,16 @@ public class ScannerUtils {
         LicensePlateUtils.releaseRecognizer(id);
         if (TextUtils.isEmpty(s)) return null;
         return s;
+    }
+
+    /**
+     * 图片文字识别，请在子线程运行，慎重使用，可能会随时失效，图片限制500k以内
+     *
+     * @param imageFilePath
+     * @return
+     */
+    public static String decodeText(String imageFilePath) {
+        return TextRecognition.recognize(imageFilePath);
     }
 
     /**

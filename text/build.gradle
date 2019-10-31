@@ -4,15 +4,27 @@ android {
     compileSdkVersion 28
     buildToolsVersion "28.0.3"
 
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+
+        ndk {
+            moduleName "TextRecognition"
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
     }
 }
 
 dependencies {
-    api 'com.rmtheis:tess-two:9.0.0'
 }
+
+//发布 Jcenter
+apply from: 'bintray.gradle'
