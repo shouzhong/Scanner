@@ -47,17 +47,18 @@ public class IdCardUtils {
      * @return
      */
     public static final boolean initDict(final Context context) {
-        final String name = "/zocr0.lib";
-        final String path = context.getExternalFilesDir("idcard").getAbsoluteFile().getPath();
-        final String pathname = path + name;
+        File dir = context.getExternalFilesDir("idcard");
+        if (dir.exists() && dir.isFile()) dir.delete();
+        if (!dir.exists()) dir.mkdirs();
+        File file = new File(dir, "zocr0.lib");
         // step1: 检测字典是否存在
-        boolean okFile = checkFile(context, pathname);
+        boolean okFile = checkFile(context, file);
         if (!okFile) {
             clearDict();
             return false;
         }
         // step2: 检测字典是否正确
-        boolean okDict = checkDict(path);
+        boolean okDict = checkDict(dir.getAbsolutePath());
         if (!okDict) {
             clearDict();
             return false;
@@ -82,7 +83,7 @@ public class IdCardUtils {
 
     private static final boolean checkDict(final String path) {
         try {
-            final byte[] bytes = path.getBytes("GBK");
+            final byte[] bytes = path.getBytes();
             final int code = EXOCREngine.nativeInit(bytes);
             Log.e("kalu", "checkDict ==> code = " + code);
             return code >= 0;
@@ -91,10 +92,8 @@ public class IdCardUtils {
         return false;
     }
 
-    private static final boolean checkFile(final Context context, final String pathname) {
+    private static final boolean checkFile(final Context context, final File file) {
         try {
-            //如果文件已存在，则删除文件
-            File file = new File(pathname);
             //在assets资产目录下获取授权文件
             InputStream myInput = context.getAssets().open("zocr0.lib");
             int len1 = myInput.available();
@@ -105,10 +104,10 @@ public class IdCardUtils {
             }
             if (file.exists()) file.delete();
             //将授权文件写到 data/data/包名 目录下
-            OutputStream myOutput = new FileOutputStream(pathname);
+            OutputStream myOutput = new FileOutputStream(file);
             byte[] buffer = new byte[1024];
             int length;
-            while ((length = myInput.read(buffer)) > 0) {
+            while ((length = myInput.read(buffer)) != -1) {
                 myOutput.write(buffer, 0, length);
             }
             myOutput.close();

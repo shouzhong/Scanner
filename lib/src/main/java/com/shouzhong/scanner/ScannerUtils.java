@@ -165,6 +165,7 @@ public class ScannerUtils {
 
     /**
      * 图片文字识别，请在子线程运行，慎重使用，可能会随时失效，图片限制500k以内
+     * 如果图片太大可以使用luban等之类的图片压缩库
      *
      * @param imageFilePath
      * @return

@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.shouzhong.scanner.ScannerUtils;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = getClass().getSimpleName();
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String path = getExternalFilesDir("image") + "/a.jpg";
+                String path = getExternalFilesDir("image").getAbsolutePath() + "/a.jpg";
                 String s = ScannerUtils.decodeText(path);
                 Message msg = handler.obtainMessage();
                 msg.what = 0;
