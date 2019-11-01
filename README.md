@@ -30,7 +30,7 @@ implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
 // 银行卡识别
 implementation 'com.shouzhong:ScannerBankCardLib:1.0.2'
 // 身份证识别
-implementation 'com.shouzhong:ScannerIdCardLib:1.0.3'
+implementation 'com.shouzhong:ScannerIdCardLib:1.0.4'
 // 车牌识别
 implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.1'
 // 图片文字识别

@@ -83,12 +83,26 @@ public class IdCardUtils {
 
     private static final boolean checkDict(final String path) {
         try {
-            final byte[] bytes = path.getBytes();
-            final int code = EXOCREngine.nativeInit(bytes);
-            Log.e("kalu", "checkDict ==> code = " + code);
+            byte[] bytes = path.getBytes("UTF-8");
+            int code = EXOCREngine.nativeInit(bytes);
+            Log.e("kalu", "checkDict(UTF-8) ==> code = " + code);
+            if (code < 0) {
+                bytes = path.getBytes("GBK");
+                code = EXOCREngine.nativeInit(bytes);
+                Log.e("kalu", "checkDict(GBK) ==> code = " + code);
+            }
+            if (code < 0) {
+                bytes = path.getBytes("GB2312");
+                code = EXOCREngine.nativeInit(bytes);
+                Log.e("kalu", "checkDict(GB2312) ==> code = " + code);
+            }
+            if (code < 0) {
+                bytes = path.getBytes("UTF-16");
+                code = EXOCREngine.nativeInit(bytes);
+                Log.e("kalu", "checkDict(UTF-16) ==> code = " + code);
+            }
             return code >= 0;
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
         return false;
     }
 

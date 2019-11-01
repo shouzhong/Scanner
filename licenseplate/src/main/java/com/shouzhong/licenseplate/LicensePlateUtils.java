@@ -2,7 +2,6 @@ package com.shouzhong.licenseplate;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -87,7 +86,7 @@ public class LicensePlateUtils {
      * @return
      */
     public static long initRecognizer(Context context) {
-        String path = context.getExternalFilesDir(ASSETS_DIR).getAbsoluteFile().getPath();
+        String path = context.getExternalFilesDir(ASSETS_DIR).getAbsolutePath();
         String cascade_filename = path + File.separator + CASCADE_FILENAME;
         String finemapping_prototxt = path + File.separator + HORIZONAL_FINEMAPPING_PROTOTXT;
         String finemapping_caffemodel = path + File.separator + HORIZONAL_FINEMAPPING_CAFFEMODEL;
