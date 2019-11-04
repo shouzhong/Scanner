@@ -1,5 +1,7 @@
 package com.shouzhong.bankcard;
 
+import android.text.TextUtils;
+
 import com.wintone.bankcard.BankCardAPI;
 
 public class BankCardUtils {
@@ -47,5 +49,26 @@ public class BankCardUtils {
      */
     public static void release(BankCardAPI api) {
         api.WTUnInitCardKernal();
+    }
+
+    /**
+     * 获取银行卡信息
+     *
+     * @param cardNumber
+     * @return
+     */
+    public static BankCardInfoBean getBankCardInfo(String cardNumber) {
+        try {
+            String s = BankCardInfo.bankCardInfo(cardNumber);
+            if (TextUtils.isEmpty(s)) return null;
+            String[] ss = s.split(",");
+            if (ss == null || ss.length != 2) return null;
+            BankCardInfoBean b = new BankCardInfoBean();
+            b.cardNumber = cardNumber;
+            b.cardType = ss[0];
+            b.bank = ss[1];
+            return b;
+        } catch (Exception e) {}
+        return null;
     }
 }

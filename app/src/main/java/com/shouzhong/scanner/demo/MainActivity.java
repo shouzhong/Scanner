@@ -10,9 +10,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.shouzhong.bankcard.BankCardInfoBean;
 import com.shouzhong.scanner.ScannerUtils;
-
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,8 +42,10 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String path = getExternalFilesDir("image").getAbsolutePath() + "/a.jpg";
-                String s = ScannerUtils.decodeText(path);
+//                String path = getExternalFilesDir("image").getAbsolutePath() + "/a.jpg";
+//                String s = ScannerUtils.decodeText(path);
+                BankCardInfoBean b = ScannerUtils.getBankCardInfo("6222600260001072444");
+                String s = b == null ? null : b.toString();
                 Message msg = handler.obtainMessage();
                 msg.what = 0;
                 msg.obj = TextUtils.isEmpty(s) ? "识别失败" : s;

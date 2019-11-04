@@ -17,6 +17,7 @@ import com.google.zxing.Result;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.shouzhong.bankcard.BankCardInfoBean;
 import com.shouzhong.bankcard.BankCardUtils;
 import com.shouzhong.idcard.IdCardUtils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
@@ -121,6 +122,16 @@ public class ScannerUtils {
         } catch (Exception e) {}
         BankCardUtils.release(api);
         throw new Exception("failure");
+    }
+
+    /**
+     * 获取银行卡信息，请在子线程运行
+     *
+     * @param cardNumber 银行卡号
+     * @return
+     */
+    public static BankCardInfoBean getBankCardInfo(String cardNumber) {
+        return BankCardUtils.getBankCardInfo(cardNumber);
     }
 
     /**

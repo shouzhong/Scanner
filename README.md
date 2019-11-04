@@ -19,7 +19,7 @@
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.0.9'
+implementation 'com.shouzhong:Scanner:1.0.10'
 ```
 以下选择自己需要的
 ```
@@ -28,7 +28,7 @@ implementation 'com.google.zxing:core:3.3.3'
 // zbar
 implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
 // 银行卡识别
-implementation 'com.shouzhong:ScannerBankCardLib:1.0.2'
+implementation 'com.shouzhong:ScannerBankCardLib:1.0.3'
 // 身份证识别
 implementation 'com.shouzhong:ScannerIdCardLib:1.0.4'
 // 车牌识别
@@ -273,6 +273,17 @@ birth | type为TYPE_ID_CARD_FRONT，出生年月日：yyyy-MM-dd
 office | type为TYPE_ID_CARD_BACK，签发机关
 validDate | type为TYPE_ID_CARD_BACK，有限期限：yyyyMMdd-yyyyMMdd
 
+BankCardInfoBean
+
+属性或方法 | 说明
+------------ | -------------
+cardNumber | 银行卡号
+cardType | 银行卡（英文）类型
+bank | 银行（英文）名称
+getCNBankName | 获取银行（中文）名称
+getBankId | 获取银行编号
+getCNCardType | 获取银行卡（中文）类型
+
 ## 方法说明
 
 ScannerView
@@ -303,6 +314,7 @@ ScannerUtils
 ------------ | -------------
 decodeCode | 二维码/条码识别，建议在子线程运行
 decodeBank | 银行卡识别，建议在子线程运行
+getBankCardInfo | 获取银行卡信息，请在子线程运行
 decodeIdCard | 身份证识别，建议在子线程运行
 decodeLicensePlate | 车牌识别，建议在子线程运行
 decodeText | 图片文字识别，请在子线程运行
