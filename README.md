@@ -35,7 +35,7 @@ implementation 'com.shouzhong:ScannerIdCardLib:1.0.4'
 implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.1'
 // 图片文字识别
 implementation 'com.shouzhong:ScannerTextLib:1.0.0'
-// 黄图文字识别
+// 黄图识别
 implementation 'com.shouzhong:ScannerNsfwLib:1.0.0'
 ```
 ### 代码
