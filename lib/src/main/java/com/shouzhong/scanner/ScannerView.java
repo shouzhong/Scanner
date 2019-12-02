@@ -24,6 +24,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.shouzhong.bankcard.BankCardUtils;
 import com.shouzhong.idcard.IdCardUtils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
+import com.shouzhong.licenseplate2.LicensePlate2Utils;
 import com.wintone.bankcard.BankCardAPI;
 
 import net.sourceforge.zbar.Config;
@@ -68,8 +69,10 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     private boolean enableBankCard = false;
     private boolean enableIdCard = false;
     private boolean enableLicensePlate = false;
+    private boolean enableLicensePlate2 = false;
     private boolean isIdCardInit = false;
     private long licensePlateId;
+    private long licensePlate2Id;
 
     public ScannerView(Context context) {
         this(context, null);
@@ -227,7 +230,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             }
             if (enableLicensePlate && result == null) {
                 try {
-                    String s = LicensePlateUtils.recognize(tempData, width, height, getLicensePlatId());
+                    String s = LicensePlateUtils.recognize(tempData, width, height, getLicensePlateId());
                     if (!TextUtils.isEmpty(s)) {
                         result = new Result();
                         result.type = Result.TYPE_LICENSE_PLATE;
@@ -238,7 +241,31 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                 }
                 if (result == null && isRotateDegree90Recognition) {
                     try {
-                        String s = LicensePlateUtils.recognize(tempData2, width2, height2, getLicensePlatId());
+                        String s = LicensePlateUtils.recognize(tempData2, width2, height2, getLicensePlateId());
+                        if (!TextUtils.isEmpty(s)) {
+                            result = new Result();
+                            result.type = Result.TYPE_LICENSE_PLATE;
+                            result.text = s;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+            }
+            if (enableLicensePlate2 && result == null) {
+                try {
+                    String s = LicensePlate2Utils.recognize(tempData, width, height, getLicensePlate2Id());
+                    if (!TextUtils.isEmpty(s)) {
+                        result = new Result();
+                        result.type = Result.TYPE_LICENSE_PLATE;
+                        result.text = s;
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                if (result == null && isRotateDegree90Recognition) {
+                    try {
+                        String s = LicensePlate2Utils.recognize(tempData2, width2, height2, getLicensePlate2Id());
                         if (!TextUtils.isEmpty(s)) {
                             result = new Result();
                             result.type = Result.TYPE_LICENSE_PLATE;
@@ -498,6 +525,15 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     }
 
     /**
+     * 是否使用车牌识别
+     *
+     * @param enableLicensePlate2
+     */
+    public void setEnableLicensePlate2(boolean enableLicensePlate2) {
+        this.enableLicensePlate2 = enableLicensePlate2;
+    }
+
+    /**
      * 设置识别器
      *
      * @param scanner
@@ -587,9 +623,18 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
      * 初始化车牌识别
      *
      */
-    private synchronized long getLicensePlatId() {
+    private synchronized long getLicensePlateId() {
         if (licensePlateId == 0) licensePlateId = LicensePlateUtils.initRecognizer(getContext());
         return licensePlateId;
+    }
+
+    /**
+     * 初始化车牌识别
+     *
+     */
+    private synchronized long getLicensePlate2Id() {
+        if (licensePlate2Id == 0) licensePlate2Id = LicensePlate2Utils.initRecognizer(getContext());
+        return licensePlate2Id;
     }
 
     void setCameraWrapper(CameraWrapper cameraWrapper) {
@@ -653,6 +698,12 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             try {
                 LicensePlateUtils.releaseRecognizer(licensePlateId);
                 licensePlateId = 0;
+            } catch (Exception e) {}
+        }
+        if (licensePlate2Id != 0) {
+            try {
+                LicensePlate2Utils.releaseRecognizer(licensePlate2Id);
+                licensePlate2Id = 0;
             } catch (Exception e) {}
         }
         removeAllViews();

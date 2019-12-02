@@ -31,6 +31,7 @@ public class ScannerActivity extends AppCompatActivity {
     private SwitchCompat scBankCard;
     private SwitchCompat scIdCard;
     private SwitchCompat scLicensePlate;
+    private SwitchCompat scLicensePlate2;
 
     private Vibrator vibrator;
 
@@ -45,6 +46,7 @@ public class ScannerActivity extends AppCompatActivity {
         scBankCard = findViewById(R.id.sc_bank);
         scIdCard = findViewById(R.id.sc_id_card);
         scLicensePlate = findViewById(R.id.sc_license_plate);
+        scLicensePlate2 = findViewById(R.id.sc_license_plate2);
         scannerView.setShouldAdjustFocusArea(true);
         scannerView.setViewFinder(new ViewFinder(this));
         scannerView.setSaveBmp(true);
@@ -87,10 +89,10 @@ public class ScannerActivity extends AppCompatActivity {
                 scannerView.setEnableLicensePlate(isChecked);
             }
         });
-        scannerView.setScanner(new IScanner() {
+        scLicensePlate2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public Result scan(byte[] data, int width, int height) throws Exception {
-                return null;
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                scannerView.setEnableLicensePlate2(isChecked);
             }
         });
     }

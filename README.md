@@ -19,7 +19,7 @@
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.0.10'
+implementation 'com.shouzhong:Scanner:1.0.11'
 ```
 以下选择自己需要的
 ```
@@ -35,6 +35,8 @@ implementation 'com.shouzhong:ScannerIdCardLib:1.0.4'
 implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.1'
 // 图片文字识别
 implementation 'com.shouzhong:ScannerTextLib:1.0.0'
+// 黄图文字识别
+implementation 'com.shouzhong:ScannerNsfwLib:1.0.0'
 ```
 ### 代码
 基本使用
@@ -318,6 +320,7 @@ getBankCardInfo | 获取银行卡信息，请在子线程运行
 decodeIdCard | 身份证识别，建议在子线程运行
 decodeLicensePlate | 车牌识别，建议在子线程运行
 decodeText | 图片文字识别，请在子线程运行
+decodeNsfw | 黄图识别，大于0.3可以说图片涉黄，建议在子线程运行
 createBarcode | 条码生成，建议在子线程运行
 createQRCode | 二维码生成，建议在子线程运行
 addLogo | 往图片中间加logo
@@ -362,4 +365,6 @@ android {
 -dontwarn com.wintone.bankcard.**
 -keep class exocr.exocrengine.** {*;}
 -dontwarn exocr.exocrengine.**
+-keep class org.tensorflow.lite.** {*;}
+-dontwarn org.tensorflow.lite.**
 ```

@@ -21,8 +21,11 @@ import com.shouzhong.bankcard.BankCardInfoBean;
 import com.shouzhong.bankcard.BankCardUtils;
 import com.shouzhong.idcard.IdCardUtils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
+import com.shouzhong.nsfw.NsfwUtils;
 import com.shouzhong.text.TextRecognition;
 import com.wintone.bankcard.BankCardAPI;
+
+import org.tensorflow.lite.Interpreter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -183,6 +186,21 @@ public class ScannerUtils {
      */
     public static String decodeText(String imageFilePath) {
         return TextRecognition.recognize(imageFilePath);
+    }
+
+    /**
+     * 黄图识别，建议在子线程运行
+     *
+     * @param context
+     * @param bmp
+     * @return 大于0.3可以说图片涉黄，根据实际情况取值
+     * @throws Exception
+     */
+    public static float decodeNsfw(Context context, Bitmap bmp) throws Exception {
+        Interpreter tflite = NsfwUtils.getInterpreter(context);
+        float f = NsfwUtils.decode(tflite, bmp);
+        NsfwUtils.release(tflite);
+        return f;
     }
 
     /**

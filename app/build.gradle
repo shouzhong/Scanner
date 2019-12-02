@@ -52,7 +52,9 @@ dependencies {
     implementation project(":bankcard")
     implementation project(":idcard")
     implementation project(":licenseplate")
+//    implementation project(":licenseplate2")
     implementation project(":text")
+    implementation project(":nsfw")
 //    implementation 'com.shouzhong:Scanner:1.0.3'
 //    implementation 'com.shouzhong:ScannerZBarLib:1.0.0'
 //    implementation 'com.shouzhong:ScannerBankCardLib:1.0.1'

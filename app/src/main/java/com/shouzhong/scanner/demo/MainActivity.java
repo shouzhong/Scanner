@@ -1,6 +1,7 @@
 package com.shouzhong.scanner.demo;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,7 +12,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.shouzhong.bankcard.BankCardInfoBean;
+import com.shouzhong.nsfw.NsfwUtils;
 import com.shouzhong.scanner.ScannerUtils;
+
+import org.tensorflow.lite.Interpreter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,11 +48,14 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
 //                String path = getExternalFilesDir("image").getAbsolutePath() + "/a.jpg";
 //                String s = ScannerUtils.decodeText(path);
-                BankCardInfoBean b = ScannerUtils.getBankCardInfo("6222600260001072444");
-                String s = b == null ? null : b.toString();
+//                BankCardInfoBean b = ScannerUtils.getBankCardInfo("6222600260001072444");
+//                String s = b == null ? null : b.toString();
+                Interpreter interpreter = NsfwUtils.getInterpreter(getApplication());
+                float f = NsfwUtils.decode(interpreter, BitmapFactory.decodeResource(getResources(), R.mipmap.timg));
+                NsfwUtils.release(interpreter);
                 Message msg = handler.obtainMessage();
                 msg.what = 0;
-                msg.obj = TextUtils.isEmpty(s) ? "识别失败" : s;
+                msg.obj = f + "";
                 handler.sendMessage(msg);
             }
         }).start();
