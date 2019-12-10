@@ -30,7 +30,7 @@
         android:textSize="20sp"
         android:text="测试"
         android:onClick="onClickBtn2"
-        android:visibility="visible"/>
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv"
