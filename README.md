@@ -19,7 +19,7 @@
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.0.11'
+implementation 'com.shouzhong:Scanner:1.0.12'
 ```
 以下选择自己需要的
 ```
@@ -294,6 +294,7 @@ ScannerView
 ------------ | -------------
 setViewFinder | 扫描区域
 setCallback | 扫码成功后的回调
+setCameraDirection | 摄像头方向，后置为Camera.CameraInfo.CAMERA_FACING_BACK，前置为Camera.CameraInfo.CAMERA_FACING_FRONT
 setEnableZXing | 是否启用zxing识别器，默认false
 setEnableZBar | 是否启用zbar识别器，默认false
 setEnableBankCard | 是否启用银行卡识别器，默认false
@@ -367,4 +368,6 @@ android {
 -dontwarn exocr.exocrengine.**
 -keep class org.tensorflow.lite.** {*;}
 -dontwarn org.tensorflow.lite.**
+-keep class zeusees.tracking.** {*;}
+-dontwarn zeusees.tracking.**
 ```

@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
@@ -17,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.shouzhong.scanner.Callback;
-import com.shouzhong.scanner.IScanner;
 import com.shouzhong.scanner.IViewFinder;
 import com.shouzhong.scanner.Result;
 import com.shouzhong.scanner.ScannerView;
@@ -26,6 +26,7 @@ public class ScannerActivity extends AppCompatActivity {
 
     private ScannerView scannerView;
     private TextView tvResult;
+    private SwitchCompat scDirection;
     private SwitchCompat scZXing;
     private SwitchCompat scZBar;
     private SwitchCompat scBankCard;
@@ -34,6 +35,7 @@ public class ScannerActivity extends AppCompatActivity {
     private SwitchCompat scLicensePlate2;
 
     private Vibrator vibrator;
+    private long session;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class ScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
         scannerView = findViewById(R.id.sv);
         tvResult = findViewById(R.id.tv_result);
+        scDirection = findViewById(R.id.sc_direction);
         scZXing = findViewById(R.id.sc_zxing);
         scZBar = findViewById(R.id.sc_zbar);
         scBankCard = findViewById(R.id.sc_bank);
@@ -49,7 +52,8 @@ public class ScannerActivity extends AppCompatActivity {
         scLicensePlate2 = findViewById(R.id.sc_license_plate2);
         scannerView.setShouldAdjustFocusArea(true);
         scannerView.setViewFinder(new ViewFinder(this));
-        scannerView.setSaveBmp(true);
+//        scannerView.setViewFinder(new ViewFinder2());
+        scannerView.setSaveBmp(false);
         scannerView.setRotateDegree90Recognition(true);
         scannerView.setCallback(new Callback() {
             @Override
@@ -57,6 +61,14 @@ public class ScannerActivity extends AppCompatActivity {
                 tvResult.setText("识别结果：\n" + result.toString());
                 startVibrator();
                 scannerView.restartPreviewAfterDelay(2000);
+            }
+        });
+        scDirection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                scannerView.onPause();
+                scannerView.setCameraDirection(isChecked ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK);
+                scannerView.onResume();
             }
         });
         scZXing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -127,6 +139,7 @@ public class ScannerActivity extends AppCompatActivity {
     class ViewFinder extends View implements IViewFinder {
         private Rect framingRect;//扫码框所占区域
         private float widthRatio = 0.8f;//扫码框宽度占view总宽度的比例
+        private float heightRatio = 0.8f;
         private float heightWidthRatio = 1f;//扫码框的高宽比
         private int leftOffset = -1;//扫码框相对于左边的偏移量，若为负值，则扫码框会水平居中
         private int topOffset = -1;//扫码框相对于顶部的偏移量，若为负值，则扫码框会竖直居中
@@ -234,7 +247,8 @@ public class ScannerActivity extends AppCompatActivity {
             Point viewSize = new Point(getWidth(), getHeight());
             int width = getWidth() * 801 / 1080, height = getWidth() * 811 / 1080;
             width = (int) (getWidth() * widthRatio);
-            height = (int) (heightWidthRatio * width);
+            height = (int) (getHeight() * heightRatio);
+//            height = (int) (heightWidthRatio * width);
 
             int left, top;
             if (leftOffset < 0) {
@@ -253,6 +267,13 @@ public class ScannerActivity extends AppCompatActivity {
         @Override
         public Rect getFramingRect() {
             return framingRect;
+        }
+    }
+
+    class ViewFinder2 implements IViewFinder {
+        @Override
+        public Rect getFramingRect() {
+            return new Rect(240, 240, 840, 840);
         }
     }
 }

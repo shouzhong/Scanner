@@ -21,6 +21,7 @@ dependencies {
     compileOnly project(":licenseplate2")
     compileOnly project(":text")
     compileOnly project(":nsfw")
+    compileOnly project(":facelandmark")
 }
 
 //发布 Jcenter

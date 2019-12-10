@@ -49,7 +49,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     public static final String TAG = "ScannerView";
 
     private CameraWrapper cameraWrapper;
-    private IViewFinder viewFinderView;
+    private IViewFinder viewFinder;
     private CameraPreview cameraPreview;
     private Rect scaledRect;
     private ArrayList<Camera.Area> focusAreas;
@@ -61,6 +61,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     private BankCardAPI bankCardAPI;
     private Callback callback;
     private IScanner scanner;
+    private int cameraDirection = Camera.CameraInfo.CAMERA_FACING_BACK;
     private int[] previewSize;
     private boolean isSaveBmp;
     private boolean isRotateDegree90Recognition = false;
@@ -99,7 +100,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             int previewHeight = previewSize[1];
             int  rotationCount = getRotationCount();
             boolean isRotated = rotationCount == 1 || rotationCount == 3;
-            //根据ViewFinderView和preview的尺寸之比，缩放扫码区域
+            //根据预览页面尺寸和preview的尺寸之比，缩放扫码区域
             Rect rect = getScaledRect(previewWidth, previewHeight);
             byte[] tempData = null;
             byte[] tempData2 = null;
@@ -320,16 +321,16 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             }
             if (focusAreas == null) {
                 int width = 2000, height = 2000;
-                Rect framingRect = viewFinderView.getFramingRect();//获得扫码框区域
+                Rect framingRect = viewFinder.getFramingRect();//获得扫码框区域
                 if (framingRect == null) return;
-                int viewFinderViewWidth = ((View) viewFinderView).getWidth();
-                int viewFinderViewHeight = ((View) viewFinderView).getHeight();
-                //1.根据ViewFinderView和2000*2000的尺寸之比，缩放对焦区域
+                int w = getWidth();
+                int h = getHeight();
+                //1.根据预览页面尺寸和2000*2000的尺寸之比，缩放对焦区域
                 Rect scaledRect = new Rect(framingRect);
-                scaledRect.left = scaledRect.left * width / viewFinderViewWidth;
-                scaledRect.right = scaledRect.right * width / viewFinderViewWidth;
-                scaledRect.top = scaledRect.top * height / viewFinderViewHeight;
-                scaledRect.bottom = scaledRect.bottom * height / viewFinderViewHeight;
+                scaledRect.left = scaledRect.left * width / w;
+                scaledRect.right = scaledRect.right * width / w;
+                scaledRect.top = scaledRect.top * height / h;
+                scaledRect.bottom = scaledRect.bottom * height / h;
                 //2.旋转对焦区域
                 Rect rotatedRect = new Rect(scaledRect);
                 int rotationCount = getRotationCount();
@@ -376,11 +377,19 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     /**
      * 扫描区域
      *
-     * @param viewFinderView
+     * @param viewFinder
      */
-    public void setViewFinder(IViewFinder viewFinderView) {
-        if (viewFinderView == null || !(viewFinderView instanceof View)) throw new IllegalArgumentException("viewFinderView必须是View对象");
-        this.viewFinderView = viewFinderView;
+    public void setViewFinder(IViewFinder viewFinder) {
+        this.viewFinder = viewFinder;
+    }
+
+    /**
+     * 摄像头方向
+     *
+     * @param direction Camera.CameraInfo.CAMERA_FACING_BACK or Camera.CameraInfo.CAMERA_FACING_FRONT
+     */
+    public void setCameraDirection(int direction) {
+        this.cameraDirection = direction;
     }
 
     /**
@@ -646,17 +655,21 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         removeAllViews();
         cameraPreview = new CameraPreview(getContext(), previewSize[0], previewSize[1], cameraWrapper, this, this);
         addView(cameraPreview);
-        addView(((View) viewFinderView));
+        if (viewFinder instanceof View) addView(((View) viewFinder));
     }
 
     /**
      * 打开系统相机，并进行基本的初始化
      */
     private void startCamera() {
+        if (viewFinder == null) {
+            Log.e(TAG, "ViewFinder is null");
+            return;
+        }
         if (cameraHandlerThread == null) {
             cameraHandlerThread = new CameraHandlerThread(this);
         }
-        cameraHandlerThread.startCamera(CameraUtils.getDefaultCameraId());
+        cameraHandlerThread.startCamera(CameraUtils.getDefaultCameraId(cameraDirection));
     }
 
     /**
@@ -710,31 +723,31 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     }
 
     /**
-     * 根据ViewFinderView和preview的尺寸之比，缩放扫码区域
+     * 根据预览页面尺寸和preview的尺寸之比，缩放扫码区域
      */
     private Rect getScaledRect(int previewWidth, int previewHeight) {
         if (scaledRect == null) {
-            Rect framingRect = viewFinderView.getFramingRect();//获得扫码框区域
-            int viewFinderViewWidth = ((View) viewFinderView).getWidth();
-            int viewFinderViewHeight = ((View) viewFinderView).getHeight();
+            Rect framingRect = viewFinder.getFramingRect();//获得扫码框区域
+            int w = getWidth();
+            int h = getHeight();
             scaledRect = new Rect(framingRect);
             Point p = new Point();
             ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getSize(p);
             int o = p.x == p.y ? 0 : p.x < p.y ? Configuration.ORIENTATION_PORTRAIT : Configuration.ORIENTATION_LANDSCAPE;
             float ratio = o == Configuration.ORIENTATION_PORTRAIT ? previewHeight * 1f / previewWidth : previewWidth * 1f / previewHeight;
-            float r = viewFinderViewWidth * 1f / viewFinderViewHeight;
+            float r = w * 1f / h;
             if (ratio < r){
                 int width = o == Configuration.ORIENTATION_PORTRAIT ? previewHeight : previewWidth;
-                scaledRect.left = scaledRect.left * width / viewFinderViewWidth;
-                scaledRect.right = scaledRect.right * width / viewFinderViewWidth;
-                scaledRect.top = scaledRect.top * width / viewFinderViewWidth;
-                scaledRect.bottom = scaledRect.bottom * width / viewFinderViewWidth;
+                scaledRect.left = scaledRect.left * width / w;
+                scaledRect.right = scaledRect.right * width / w;
+                scaledRect.top = scaledRect.top * width / w;
+                scaledRect.bottom = scaledRect.bottom * width / w;
             } else {
                 int height = o == Configuration.ORIENTATION_PORTRAIT ? previewWidth : previewHeight;
-                scaledRect.left = scaledRect.left * height / viewFinderViewHeight;
-                scaledRect.right = scaledRect.right * height / viewFinderViewHeight;
-                scaledRect.top = scaledRect.top * height / viewFinderViewHeight;
-                scaledRect.bottom = scaledRect.bottom * height / viewFinderViewHeight;
+                scaledRect.left = scaledRect.left * height / h;
+                scaledRect.right = scaledRect.right * height / h;
+                scaledRect.top = scaledRect.top * height / h;
+                scaledRect.bottom = scaledRect.bottom * height / h;
             }
             int rotationCount = getRotationCount();
             int left = scaledRect.left;

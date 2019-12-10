@@ -51,7 +51,7 @@ Java_com_shouzhong_licenseplate_PlateRecognition_recognize(JNIEnv *env, jclass c
     std::vector<pr::PlateInfo> list_res = PR->RunPiplineAsImage(mBgr, pr::SEGMENTATION_FREE_METHOD);
     std::string concat_results;
     for (auto one:list_res) {
-        if (one.confidence > 0.85)
+        if (one.confidence > 0.9)
             concat_results += one.getPlateName() + ",";
     }
     concat_results = concat_results.substr(0, concat_results.size() - 1);
@@ -84,7 +84,7 @@ Java_com_shouzhong_licenseplate_PlateRecognition_recognizeBmp(JNIEnv *env, jclas
     std::vector<pr::PlateInfo> list_res = PR->RunPiplineAsImage(mBgr, pr::SEGMENTATION_FREE_METHOD);
     std::string concat_results;
     for (auto one:list_res) {
-        if (one.confidence > 0.75)
+        if (one.confidence > 0.9)
             concat_results += one.getPlateName() + ",";
     }
     concat_results = concat_results.substr(0, concat_results.size() - 1);
