@@ -662,10 +662,6 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
      * 打开系统相机，并进行基本的初始化
      */
     private void startCamera() {
-        if (viewFinder == null) {
-            Log.e(TAG, "ViewFinder is null");
-            return;
-        }
         if (cameraHandlerThread == null) {
             cameraHandlerThread = new CameraHandlerThread(this);
         }

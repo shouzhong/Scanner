@@ -19,7 +19,7 @@
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.0.12'
+implementation 'com.shouzhong:Scanner:1.0.13'
 ```
 以下选择自己需要的
 ```
