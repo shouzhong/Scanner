@@ -368,6 +368,4 @@ android {
 -dontwarn exocr.exocrengine.**
 -keep class org.tensorflow.lite.** {*;}
 -dontwarn org.tensorflow.lite.**
--keep class zeusees.tracking.** {*;}
--dontwarn zeusees.tracking.**
 ```
