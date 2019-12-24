@@ -32,7 +32,7 @@ implementation 'com.shouzhong:ScannerBankCardLib:1.0.3'
 // 身份证识别
 implementation 'com.shouzhong:ScannerIdCardLib:1.0.4'
 // 车牌识别
-implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.1'
+implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.2'
 // 图片文字识别
 implementation 'com.shouzhong:ScannerTextLib:1.0.0'
 // 黄图识别
