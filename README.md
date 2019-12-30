@@ -104,7 +104,6 @@ scannerView.setEnableLicensePlate(true);
 // 启用驾驶证识别
 scannerView.setEnableDrivingLicense(true);
 // 启用身份证识别（第二种方式）
-// 启用身份证识别器（这里只支持2代身份证）
 scannerView.setEnableIdCard2(true);
 ```
 如果你想自定义识别器
