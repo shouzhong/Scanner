@@ -275,7 +275,8 @@ TYPE_LICENSE_PLATE | 类型：车牌
 TYPE_DRIVING_LICENSE | 类型：驾驶证
 type | 结果类型
 path | 保存的图片路径
-data | ```
+data | 数据
+```
 // 以下是对data的说明
 // 当type为TYPE_CODE，TYPE_BANK_CARD，TYPE_LICENSE_PLATE时，data为字符串
 // 当type为TYPE_ID_CARD_FRONT时，data为json字符串，格式如下
