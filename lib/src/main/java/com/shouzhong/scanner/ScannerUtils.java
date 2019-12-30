@@ -19,7 +19,9 @@ import com.google.zxing.common.GlobalHistogramBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.shouzhong.bankcard.BankCardInfoBean;
 import com.shouzhong.bankcard.BankCardUtils;
+import com.shouzhong.drivinglicense.DrivingLicenseUtils;
 import com.shouzhong.idcard.IdCardUtils;
+import com.shouzhong.idcard2.IdCard2Utils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
 import com.shouzhong.nsfw.NsfwUtils;
 import com.shouzhong.text.TextRecognition;
@@ -75,8 +77,7 @@ public class ScannerUtils {
             BinaryBitmap binaryBitmap = new BinaryBitmap(new GlobalHistogramBinarizer(source));
             Result result = reader.decode(binaryBitmap, hints);//开始解析
             return result.getText();
-        } catch (Exception e) {
-        }
+        } catch (Exception e) { }
         Matrix m = new Matrix();
         m.setRotate(90, (float) bmp.getWidth() / 2, (float) bmp.getHeight() / 2);
         bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), m, true);
@@ -118,7 +119,7 @@ public class ScannerUtils {
             m.setRotate(90, width / 2, height / 2);
             bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, m, true);
             byte[] data = Utils.bitmapToNv21(bmp);
-            String s = BankCardUtils.decode(api, data, width, height);
+            String s = BankCardUtils.decode(api, data, height, width);
             if (TextUtils.isEmpty(s)) throw new Exception("failure");
             BankCardUtils.release(api);
             return s;
@@ -158,6 +159,81 @@ public class ScannerUtils {
         IdCardUtils.clearDict();
         if (len <= 0) return null;
         return Utils.decodeIdCard(obtain, len);
+    }
+
+    /**
+     * 识别身份证，建议在子线程运行（第二种方式）
+     *
+     * @param bmp
+     * @return
+     */
+    public static com.shouzhong.scanner.Result decodeIdCard2(Bitmap bmp) throws Exception {
+        if (bmp == null) return null;
+        if (bmp.getWidth() % 2 == 1 || bmp.getHeight() % 2 == 1) {
+            bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth() / 2 * 2, bmp.getHeight() / 2 * 2);
+        }
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        try {
+            byte[] data = Utils.bitmapToNv21(bmp);
+            String s = IdCard2Utils.decode(data, width, height);
+            if (TextUtils.isEmpty(s)) throw new Exception("failure");
+            IdCard2Utils.close();
+            com.shouzhong.scanner.Result result = new com.shouzhong.scanner.Result();
+            result.type = s.contains("cardNumber") ? com.shouzhong.scanner.Result.TYPE_ID_CARD_FRONT : com.shouzhong.scanner.Result.TYPE_ID_CARD_BACK;
+            result.data = s;
+            return result;
+        } catch (Exception e) {}
+        try {
+            Matrix m = new Matrix();
+            m.setRotate(90, width / 2, height / 2);
+            bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, m, true);
+            byte[] data = Utils.bitmapToNv21(bmp);
+            String s = IdCard2Utils.decode(data, height, width);
+            if (TextUtils.isEmpty(s)) throw new Exception("failure");
+            IdCard2Utils.close();
+            com.shouzhong.scanner.Result result = new com.shouzhong.scanner.Result();
+            result.type = s.contains("cardNumber") ? com.shouzhong.scanner.Result.TYPE_ID_CARD_FRONT : com.shouzhong.scanner.Result.TYPE_ID_CARD_BACK;
+            result.data = s;
+            return result;
+        } catch (Exception e) {}
+        IdCard2Utils.close();
+        return null;
+    }
+
+    /**
+     * 识别驾驶证，建议在子线程运行
+     *
+     * @param bmp
+     * @return
+     * @throws Exception
+     */
+    public static String decodeDrivingLicense(Bitmap bmp) throws Exception {
+        if (bmp == null) return null;
+        if (bmp.getWidth() % 2 == 1 || bmp.getHeight() % 2 == 1) {
+            bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth() / 2 * 2, bmp.getHeight() / 2 * 2);
+        }
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        try {
+            byte[] data = Utils.bitmapToNv21(bmp);
+            String s = DrivingLicenseUtils.decode(data, width, height);
+            if (TextUtils.isEmpty(s)) throw new Exception("failure");
+            DrivingLicenseUtils.close();
+            return s;
+        } catch (Exception e) {}
+        try {
+            Matrix m = new Matrix();
+            m.setRotate(90, width / 2, height / 2);
+            bmp = Bitmap.createBitmap(bmp, 0, 0, width, height, m, true);
+            byte[] data = Utils.bitmapToNv21(bmp);
+            String s = DrivingLicenseUtils.decode(data, height, width);
+            if (TextUtils.isEmpty(s)) throw new Exception("failure");
+            DrivingLicenseUtils.close();
+            return s;
+        } catch (Exception e) {}
+        DrivingLicenseUtils.close();
+        return null;
     }
 
     /**

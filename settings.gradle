@@ -1,2 +1,2 @@
-include ':app', ':lib', ':zbar', ':bankcard', ':idcard', ':licenseplate', ':text', ':licenseplate2', ':nsfw', ':facelandmark'
+include ':app', ':lib', ':zbar', ':bankcard', ':idcard', ':licenseplate', ':text', ':licenseplate2', ':nsfw', ':facelandmark', ':drivinglicense', ':baseocr', ':idcard2'
 rootProject.name='Scanner'

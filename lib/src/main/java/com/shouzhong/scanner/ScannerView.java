@@ -22,9 +22,10 @@ import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.shouzhong.bankcard.BankCardUtils;
+import com.shouzhong.drivinglicense.DrivingLicenseUtils;
 import com.shouzhong.idcard.IdCardUtils;
+import com.shouzhong.idcard2.IdCard2Utils;
 import com.shouzhong.licenseplate.LicensePlateUtils;
-import com.shouzhong.licenseplate2.LicensePlate2Utils;
 import com.wintone.bankcard.BankCardAPI;
 
 import net.sourceforge.zbar.Config;
@@ -70,10 +71,12 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     private boolean enableBankCard = false;
     private boolean enableIdCard = false;
     private boolean enableLicensePlate = false;
-    private boolean enableLicensePlate2 = false;
+    private boolean enableIdCard2 = false;
+    private boolean enableDrivingLicense = false;
     private boolean isIdCardInit = false;
+    private boolean isIdCard2Init = false;
+    private boolean isDrivingLicenseInit = false;
     private long licensePlateId;
-    private long licensePlate2Id;
 
     public ScannerView(Context context) {
         this(context, null);
@@ -155,7 +158,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         if (!TextUtils.isEmpty(s)) {
                             result = new Result();
                             result.type = Result.TYPE_CODE;
-                            result.text = s;
+                            result.data = s;
                             break;
                         }
                     }
@@ -167,7 +170,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                     String s = getMultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints0).getText();
                     result = new Result();
                     result.type = Result.TYPE_CODE;
-                    result.text = s;
+                    result.data = s;
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
                 }
@@ -177,7 +180,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         String s = getMultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints0).getText();
                         result = new Result();
                         result.type = Result.TYPE_CODE;
-                        result.text = s;
+                        result.data = s;
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
                     }
@@ -189,7 +192,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                     if (!TextUtils.isEmpty(s)) {
                         result = new Result();
                         result.type = Result.TYPE_BANK_CARD;
-                        result.text = s;
+                        result.data = s;
                     }
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
@@ -200,7 +203,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         if (!TextUtils.isEmpty(s)) {
                             result = new Result();
                             result.type = Result.TYPE_BANK_CARD;
-                            result.text = s;
+                            result.data = s;
                         }
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
@@ -235,7 +238,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                     if (!TextUtils.isEmpty(s)) {
                         result = new Result();
                         result.type = Result.TYPE_LICENSE_PLATE;
-                        result.text = s;
+                        result.data = s;
                     }
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
@@ -246,31 +249,57 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                         if (!TextUtils.isEmpty(s)) {
                             result = new Result();
                             result.type = Result.TYPE_LICENSE_PLATE;
-                            result.text = s;
+                            result.data = s;
                         }
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
                     }
                 }
             }
-            if (enableLicensePlate2 && result == null) {
+            if (enableIdCard2 && result == null) {
                 try {
-                    String s = LicensePlate2Utils.recognize(tempData, width, height, getLicensePlate2Id());
+                    if (!isIdCard2Init) isIdCard2Init = true;
+                    String s = IdCard2Utils.decode(tempData, width, height);
                     if (!TextUtils.isEmpty(s)) {
                         result = new Result();
-                        result.type = Result.TYPE_LICENSE_PLATE;
-                        result.text = s;
+                        result.type = s.contains("cardNumber") ? Result.TYPE_ID_CARD_FRONT : Result.TYPE_ID_CARD_BACK;
+                        result.data = s;
                     }
                 } catch (Exception e) {
                     Log.e(TAG, e.getMessage());
                 }
                 if (result == null && isRotateDegree90Recognition) {
                     try {
-                        String s = LicensePlate2Utils.recognize(tempData2, width2, height2, getLicensePlate2Id());
+                        String s = IdCard2Utils.decode(tempData2, width2, height2);
                         if (!TextUtils.isEmpty(s)) {
                             result = new Result();
-                            result.type = Result.TYPE_LICENSE_PLATE;
-                            result.text = s;
+                            result.type = s.contains("cardNumber") ? Result.TYPE_ID_CARD_FRONT : Result.TYPE_ID_CARD_BACK;
+                            result.data = s;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+            }
+            if (enableDrivingLicense && result == null) {
+                try {
+                    if (!isDrivingLicenseInit) isDrivingLicenseInit = true;
+                    String s = DrivingLicenseUtils.decode(tempData, width, height);
+                    if (!TextUtils.isEmpty(s)) {
+                        result = new Result();
+                        result.type = Result.TYPE_DRIVING_LICENSE;
+                        result.data = s;
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                if (result == null && isRotateDegree90Recognition) {
+                    try {
+                        String s = DrivingLicenseUtils.decode(tempData2, width2, height2);
+                        if (!TextUtils.isEmpty(s)) {
+                            result = new Result();
+                            result.type = Result.TYPE_DRIVING_LICENSE;
+                            result.data = s;
                         }
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
@@ -466,80 +495,89 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
      * <br/>
      * (经测试，此功能对少数机型无效，待优化)
      */
-    public void setShouldAdjustFocusArea(boolean shouldAdjustFocusArea) {
-        this.shouldAdjustFocusArea = shouldAdjustFocusArea;
+    public void setShouldAdjustFocusArea(boolean boo) {
+        this.shouldAdjustFocusArea = boo;
     }
 
     /**
      * 是否保存图片
      *
-     * @param b
+     * @param boo
      */
-    public void setSaveBmp(boolean b) {
-        isSaveBmp = b;
+    public void setSaveBmp(boolean boo) {
+        this.isSaveBmp = boo;
     }
 
     /**
      * 是否在原来识别的图像基础上旋转90度继续识别
      *
-     * @param b
+     * @param boo
      */
-    public void setRotateDegree90Recognition(boolean b) {
-        this.isRotateDegree90Recognition = b;
+    public void setRotateDegree90Recognition(boolean boo) {
+        this.isRotateDegree90Recognition = boo;
     }
 
     /**
      * 是否使用ZXing识别
      *
-     * @param enableZXing
+     * @param boo
      */
-    public void setEnableZXing(boolean enableZXing) {
-        this.enableZXing = enableZXing;
+    public void setEnableZXing(boolean boo) {
+        this.enableZXing = boo;
     }
 
     /**
      * 是否使用ZBar识别
      *
-     * @param enableZBar
+     * @param boo
      */
-    public void setEnableZBar(boolean enableZBar) {
-        this.enableZBar = enableZBar;
+    public void setEnableZBar(boolean boo) {
+        this.enableZBar = boo;
     }
 
     /**
      * 是否使用银行卡识别
      *
-     * @param enableBankCard
+     * @param boo
      */
-    public void setEnableBankCard(boolean enableBankCard) {
-        this.enableBankCard = enableBankCard;
+    public void setEnableBankCard(boolean boo) {
+        this.enableBankCard = boo;
     }
 
     /**
      * 是否使用身份证识别
      *
-     * @param enableIdCard
+     * @param boo
      */
-    public void setEnableIdCard(boolean enableIdCard) {
-        this.enableIdCard = enableIdCard;
+    public void setEnableIdCard(boolean boo) {
+        this.enableIdCard = boo;
     }
 
     /**
      * 是否使用车牌识别
      *
-     * @param enableLicensePlate
+     * @param boo
      */
-    public void setEnableLicensePlate(boolean enableLicensePlate) {
-        this.enableLicensePlate = enableLicensePlate;
+    public void setEnableLicensePlate(boolean boo) {
+        this.enableLicensePlate = boo;
     }
 
     /**
-     * 是否使用车牌识别
+     * 是否使用身份证识别（第二种方式）
      *
-     * @param enableLicensePlate2
+     * @param boo
      */
-    public void setEnableLicensePlate2(boolean enableLicensePlate2) {
-        this.enableLicensePlate2 = enableLicensePlate2;
+    public void setEnableIdCard2(boolean boo) {
+        this.enableIdCard2 = boo;
+    }
+
+    /**
+     * 是否使用驾驶证识别
+     *
+     * @param boo
+     */
+    public void setEnableDrivingLicense(boolean boo) {
+        this.enableDrivingLicense = boo;
     }
 
     /**
@@ -637,15 +675,6 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         return licensePlateId;
     }
 
-    /**
-     * 初始化车牌识别
-     *
-     */
-    private synchronized long getLicensePlate2Id() {
-        if (licensePlate2Id == 0) licensePlate2Id = LicensePlate2Utils.initRecognizer(getContext());
-        return licensePlate2Id;
-    }
-
     void setCameraWrapper(CameraWrapper cameraWrapper) {
         this.cameraWrapper = cameraWrapper;
     }
@@ -694,26 +723,32 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         if (bankCardAPI != null) {
             try {
                 BankCardUtils.release(bankCardAPI);
-                bankCardAPI = null;
             } catch (Exception e) {}
+            bankCardAPI = null;
         }
         if (isIdCardInit) {
             try {
                 IdCardUtils.clearDict();
-                isIdCardInit = false;
             } catch (Exception e) {}
+            isIdCardInit = false;
         }
         if (licensePlateId != 0) {
             try {
                 LicensePlateUtils.releaseRecognizer(licensePlateId);
-                licensePlateId = 0;
             } catch (Exception e) {}
+            licensePlateId = 0;
         }
-        if (licensePlate2Id != 0) {
+        if (isIdCard2Init) {
             try {
-                LicensePlate2Utils.releaseRecognizer(licensePlate2Id);
-                licensePlate2Id = 0;
+                IdCard2Utils.close();
             } catch (Exception e) {}
+            isIdCard2Init = false;
+        }
+        if (isDrivingLicenseInit) {
+            try {
+                DrivingLicenseUtils.close();
+            } catch (Exception e) {}
+            isDrivingLicenseInit = false;
         }
         removeAllViews();
     }

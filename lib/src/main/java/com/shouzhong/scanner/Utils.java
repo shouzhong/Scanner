@@ -6,7 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
-import android.text.TextUtils;
+
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -306,13 +307,14 @@ class Utils {
      * @param resLen
      * @return
      */
-    static final Result decodeIdCard(byte[] bResultBuf, int resLen) {
+    static final Result decodeIdCard(byte[] bResultBuf, int resLen) throws Exception {
         byte code;
         int i, j, rdCount;
         String content = null;
         Result idCard = new Result();
         rdCount = 0;
         idCard.type = bResultBuf[rdCount++];
+        JSONObject out = new JSONObject();
         while (rdCount < resLen) {
             code = bResultBuf[rdCount++];
             i = 0;
@@ -327,43 +329,32 @@ class Utils {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            if (code == 0x21) {
-                idCard.cardNum = content;
-                String year = idCard.cardNum.substring(6, 10);
-                String month = idCard.cardNum.substring(10, 12);
-                String day = idCard.cardNum.substring(12, 14);
-                idCard.birth = year + "-" + month + "-" + day;
-            } else if (code == 0x22) {
-                idCard.name = content;
-            } else if (code == 0x23) {
-                idCard.sex = content;
-            } else if (code == 0x24) {
-                idCard.nation = content;
-            } else if (code == 0x25) {
-                idCard.address = content;
-            } else if (code == 0x26) {
-                idCard.office = content;
-            } else if (code == 0x27) {
-                idCard.validDate = content;
+            if (idCard.type == Result.TYPE_ID_CARD_FRONT) {
+                if (code == 0x21) {
+                    out.put("cardNumber", content);
+                    String year = content.substring(6, 10);
+                    String month = content.substring(10, 12);
+                    String day = content.substring(12, 14);
+                    out.put("birth", year + "-" + month + "-" + day);
+                } else if (code == 0x22) {
+                    out.put("name", content);
+                } else if (code == 0x23) {
+                    out.put("sex", content);
+                } else if (code == 0x24) {
+                    out.put("nation", content);
+                } else if (code == 0x25) {
+                    out.put("address", content);
+                }
+            } else if (idCard.type == Result.TYPE_ID_CARD_BACK) {
+                if (code == 0x26) {
+                    out.put("organization", content);
+                } else if (code == 0x27) {
+                    out.put("validPeriod", content);
+                }
             }
             rdCount++;
         }
         if (idCard.type != Result.TYPE_ID_CARD_FRONT && idCard.type != Result.TYPE_ID_CARD_BACK) return null;
-        if (idCard.type == Result.TYPE_ID_CARD_FRONT && (isEmpty(idCard.cardNum, idCard.name, idCard.nation, idCard.sex, idCard.address) ||
-                idCard.cardNum.length() != 18 || idCard.name.length() < 2 || idCard.address.length() < 10)) return null;
-        if (idCard.type == Result.TYPE_ID_CARD_BACK && isEmpty(idCard.office, idCard.validDate)) return null;
         return idCard;
-    }
-
-    static final boolean isEmpty(String... strs) {
-        if (strs == null) return true;
-        boolean boo = false;
-        for (String s : strs) {
-            if (TextUtils.isEmpty(s)) {
-                boo = true;
-                break;
-            }
-        }
-        return boo;
     }
 }

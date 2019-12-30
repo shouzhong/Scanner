@@ -32,10 +32,10 @@ public class ScannerActivity extends AppCompatActivity {
     private SwitchCompat scBankCard;
     private SwitchCompat scIdCard;
     private SwitchCompat scLicensePlate;
-    private SwitchCompat scLicensePlate2;
+    private SwitchCompat scIdCard2;
+    private SwitchCompat scDrivingLicense;
 
     private Vibrator vibrator;
-    private long session;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,7 +49,8 @@ public class ScannerActivity extends AppCompatActivity {
         scBankCard = findViewById(R.id.sc_bank);
         scIdCard = findViewById(R.id.sc_id_card);
         scLicensePlate = findViewById(R.id.sc_license_plate);
-        scLicensePlate2 = findViewById(R.id.sc_license_plate2);
+        scIdCard2 = findViewById(R.id.sc_id_card2);
+        scDrivingLicense = findViewById(R.id.sc_driving_license);
         scannerView.setShouldAdjustFocusArea(true);
         scannerView.setViewFinder(new ViewFinder(this));
 //        scannerView.setViewFinder(new ViewFinder2());
@@ -101,10 +102,16 @@ public class ScannerActivity extends AppCompatActivity {
                 scannerView.setEnableLicensePlate(isChecked);
             }
         });
-        scLicensePlate2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        scIdCard2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                scannerView.setEnableLicensePlate2(isChecked);
+                scannerView.setEnableIdCard2(isChecked);
+            }
+        });
+        scDrivingLicense.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                scannerView.setEnableDrivingLicense(isChecked);
             }
         });
     }

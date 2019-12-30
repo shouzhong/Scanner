@@ -18,10 +18,10 @@ dependencies {
     compileOnly project(":bankcard")
     compileOnly project(":idcard")
     compileOnly project(":licenseplate")
-    compileOnly project(":licenseplate2")
     compileOnly project(":text")
     compileOnly project(":nsfw")
-    compileOnly project(":facelandmark")
+    compileOnly project(":idcard2")
+    compileOnly project(':drivinglicense')
 }
 
 //发布 Jcenter
