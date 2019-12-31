@@ -111,9 +111,9 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
             int height = 0;
             int width2 = 0;
             int height2 = 0;
-            byte[] temp = Utils.clipNV21(data, previewWidth, previewHeight, rect.left, rect.top, rect.width(), rect.height());
             int w = rect.width() / 2 * 2;
             int h = rect.height() / 2 * 2;
+            byte[] temp = Utils.clipNV21(data, previewWidth, previewHeight, rect.left, rect.top, w, h);
             if (isRotated) {
                 tempData = Utils.rotateNV21Degree90(temp, w, h);
                 width = h;
