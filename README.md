@@ -407,3 +407,6 @@ android {
 -keep class com.ym.idcard.reg.** {*;}
 -dontwarn com.ym.idcard.reg.**
 ```
+
+## 联系我
+QQ群 777891894（问题交流）
