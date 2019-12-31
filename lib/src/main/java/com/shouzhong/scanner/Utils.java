@@ -355,6 +355,7 @@ class Utils {
             rdCount++;
         }
         if (idCard.type != Result.TYPE_ID_CARD_FRONT && idCard.type != Result.TYPE_ID_CARD_BACK) return null;
+        idCard.data = out.toString();
         return idCard;
     }
 }
