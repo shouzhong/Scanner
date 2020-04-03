@@ -345,7 +345,7 @@ setFlash | 开启/关闭闪光灯
 toggleFlash | 切换闪光灯的点亮状态
 isFlashOn | 闪光灯是否被点亮
 setShouldAdjustFocusArea | 设置是否要根据扫码框的位置去调整对焦区域的位置，部分手机不支持，默认false
-setSaveBmp | 设置是否保存条码图片，默认false
+setSaveBmp | 设置是否保存识别的图片，默认false
 setRotateDegree90Recognition | 是否在原来识别的图像基础上旋转90度继续识别，默认false
 
 ScannerUtils
