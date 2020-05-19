@@ -9,6 +9,10 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.renderscript.Type;
 
+/**
+ * nv21工具类
+ *
+ */
 public class NV21 {
 
     private RenderScript rs;

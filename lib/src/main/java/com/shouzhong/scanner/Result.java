@@ -1,5 +1,9 @@
 package com.shouzhong.scanner;
 
+/**
+ * 识别结果
+ *
+ */
 public class Result {
 
     // 二维码/条码

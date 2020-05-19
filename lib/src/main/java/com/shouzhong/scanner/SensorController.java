@@ -7,7 +7,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 /**
- * Created by Administrator on 2018/12/21.
  *
  * 加速感应器
  */

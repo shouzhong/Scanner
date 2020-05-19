@@ -23,13 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView tv;
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            tv.setText((String) msg.obj);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +43,14 @@ public class MainActivity extends AppCompatActivity {
 //                String s = ScannerUtils.decodeText(path);
 //                BankCardInfoBean b = ScannerUtils.getBankCardInfo("6222600260001072444");
 //                String s = b == null ? null : b.toString();
-                Interpreter interpreter = NsfwUtils.getInterpreter(getApplication());
-                float f = NsfwUtils.decode(interpreter, BitmapFactory.decodeResource(getResources(), R.mipmap.timg));
-                NsfwUtils.release(interpreter);
-                Message msg = handler.obtainMessage();
-                msg.what = 0;
-                msg.obj = f + "";
-                handler.sendMessage(msg);
+                String path = getExternalFilesDir("image").getAbsolutePath() + "/a.jpg";
+                final String s = ScannerUtils.decodeText(path);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        tv.setText("result=" + s);
+                    }
+                });
             }
         }).start();
     }

@@ -4,6 +4,10 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 
+/**
+ * 相机线程
+ *
+ */
 class CameraHandlerThread extends HandlerThread {
 
     private ScannerView mScannerView;

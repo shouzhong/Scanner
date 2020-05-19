@@ -2,6 +2,10 @@ package com.shouzhong.scanner;
 
 import android.graphics.Rect;
 
+/**
+ * 识别框
+ *
+ */
 public interface IViewFinder {
 
     /**

@@ -5,6 +5,10 @@ import android.text.TextUtils;
 
 import java.util.List;
 
+/**
+ * 相机工具类
+ *
+ */
 class CameraUtils {
 
     private static final String TAG = "CameraUtils";

@@ -36,9 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2018/07/31.
+ * 识别工具类
  */
-
 public class ScannerUtils {
 
     /**

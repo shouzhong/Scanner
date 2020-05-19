@@ -1,5 +1,5 @@
 #指定CMake构建本地库时所需的最小版本
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.5.3)
 
 include_directories(src/main/jni/include)
 

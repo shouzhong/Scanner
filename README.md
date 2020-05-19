@@ -18,12 +18,12 @@ QQ群 777891894（问题交流）
     </tr>
 </table>
 
-## [下载 apk-demo](https://raw.githubusercontent.com/shouzhong/Scanner/master/app/release/app-release.apk)
+## [下载 apk-demo](http://downgit.zhoudaxiaa.com/#/home?url=https://github.com/shouzhong/Scanner/blob/master/app/release/app-release.apk)
 
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.1.2-beta1'
+implementation 'com.shouzhong:Scanner:1.1.2'
 ```
 以下选择自己需要的
 ```
@@ -393,21 +393,3 @@ android {
 }
 ```
 5. so资源只有arm格式的，ScannerDrivingLicenseLib和ScannerIdCard2Lib无arm64-v8a格式
-
-## 混淆
-```
--dontwarn com.shouzhong.**
--keep class com.shouzhong.** {*;}
--dontwarn com.google.zxing.**
--keep class com.google.zxing.**
--dontwarn net.sourceforge.zbar.**
--keep class net.sourceforge.zbar.** {*;}
--keep class com.wintone.bankcard.** {*;}
--dontwarn com.wintone.bankcard.**
--keep class exocr.exocrengine.** {*;}
--dontwarn exocr.exocrengine.**
--keep class org.tensorflow.lite.** {*;}
--dontwarn org.tensorflow.lite.**
--keep class com.ym.idcard.reg.** {*;}
--dontwarn com.ym.idcard.reg.**
-```
