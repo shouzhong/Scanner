@@ -393,3 +393,8 @@ android {
 }
 ```
 5. so资源只有arm格式的，ScannerDrivingLicenseLib和ScannerIdCard2Lib无arm64-v8a格式
+
+## 求star
+#### [BaseLib](https://github.com/shouzhong/BaseLib)，ui开发基础包
+#### [Bridge](https://github.com/shouzhong/Bridge)，跨进程管理库
+#### [ScreenHelper](https://github.com/shouzhong/ScreenHelper)，屏幕适配库
