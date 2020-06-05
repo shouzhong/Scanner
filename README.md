@@ -398,3 +398,10 @@ android {
 #### [BaseLib](https://github.com/shouzhong/BaseLib)，ui开发基础包
 #### [Bridge](https://github.com/shouzhong/Bridge)，跨进程管理库
 #### [ScreenHelper](https://github.com/shouzhong/ScreenHelper)，屏幕适配库
+
+## 其他
+关于无法打开github或者github上的图片无法显示解决办法，在hosts文件中加入
+```
+140.82.113.3 github.com
+199.232.68.133 raw.githubusercontent.com
+```
