@@ -243,7 +243,10 @@ bitmapToNv21 | bitmap转nv21
 1. 该项目使用opencv-3.4.6，[点击下载](https://nchc.dl.sourceforge.net/project/opencvlibrary/3.4.6/opencv-3.4.6-android-sdk.zip)
 2. NDK版本r14b，r20编译不过去，[点击下载](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.android.google.cn%2Fndk%2Fdownloads%2Folder_releases.html)
 3. 把licennseplate的CMakeLists.txt的第12行替换成自己的opencv-android-sdk的JNI路径
-4. 如果是linux用户，请把licennseplate的build.gradle添加以下
+4. 删除所有gradle里的 apply from: 'bintray.gradle'
+5. 删除bankcard的build.gradle里的android->externalNativeBuild以及android->default->ndk和externalNativeBuild标签
+6. 删除text的build.gradle里的android->externalNativeBuild以及android->default->ndk和externalNativeBuild标签
+7. 如果是linux用户，请把licennseplate的build.gradle添加以下
 ```
 android {
 ...
@@ -259,9 +262,6 @@ android {
   }
 }
 ```
-5. 删除所有gradle里的 apply from: 'bintray.gradle'
-6. 删除bankcard的build.gradle里的android->externalNativeBuild以及android->default->ndk和externalNativeBuild标签
-7. 删除text的build.gradle里的android->externalNativeBuild以及android->default->ndk和externalNativeBuild标签
 
 ## 注意事项
 1. so资源只有arm格式的，ScannerDrivingLicenseLib和ScannerIdCard2Lib无arm64-v8a格式
