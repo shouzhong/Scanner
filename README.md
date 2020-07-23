@@ -240,10 +240,10 @@ nv21ToBitmap | nv21转bitmap
 bitmapToNv21 | bitmap转nv21
 
 ## 怎么把我的整个项目导进去
-1.该项目使用opencv-3.4.6，[点击下载](https://nchc.dl.sourceforge.net/project/opencvlibrary/3.4.6/opencv-3.4.6-android-sdk.zip)
-2.NDK版本r14b，r20编译不过去，[点击下载](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.android.google.cn%2Fndk%2Fdownloads%2Folder_releases.html)
-3.把licennseplate的CMakeLists.txt的第12行替换成自己的opencv-android-sdk的JNI路径
-4.如果是linux用户，请把licennseplate的build.gradle添加以下
+1. 该项目使用opencv-3.4.6，[点击下载](https://nchc.dl.sourceforge.net/project/opencvlibrary/3.4.6/opencv-3.4.6-android-sdk.zip)
+2. NDK版本r14b，r20编译不过去，[点击下载](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.android.google.cn%2Fndk%2Fdownloads%2Folder_releases.html)
+3. 把licennseplate的CMakeLists.txt的第12行替换成自己的opencv-android-sdk的JNI路径
+4. 如果是linux用户，请把licennseplate的build.gradle添加以下
   ```
   android {
   ...
