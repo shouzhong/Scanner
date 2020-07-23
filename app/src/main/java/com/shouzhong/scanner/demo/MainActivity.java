@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 //                String s = ScannerUtils.decodeText(path);
 //                BankCardInfoBean b = ScannerUtils.getBankCardInfo("6222600260001072444");
 //                String s = b == null ? null : b.toString();
-                String path = getExternalFilesDir("image").getAbsolutePath() + "/a.jpg";
+                String path = getExternalFilesDir("image").getAbsolutePath() + "/a.png";
                 final String s = ScannerUtils.decodeText(path);
                 runOnUiThread(new Runnable() {
                     @Override
