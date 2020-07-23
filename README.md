@@ -246,7 +246,7 @@ bitmapToNv21 | bitmap转nv21
 4. 删除所有gradle里的 apply from: 'bintray.gradle'
 5. 删除bankcard的build.gradle里的android->externalNativeBuild以及android->defaultConfig->ndk和externalNativeBuild标签
 6. 删除text的build.gradle里的android->externalNativeBuild以及android->defaultConfig->ndk和externalNativeBuild标签
-7. 如果是linux用户，请把licennseplate的build.gradle添加以下
+7. 如果是linux用户，请在licennseplate的build.gradle添加以下
 ```
 android {
 ...
