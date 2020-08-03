@@ -36,7 +36,7 @@ implementation 'com.shouzhong:ScannerBankCardLib:1.0.3'
 // 身份证识别
 implementation 'com.shouzhong:ScannerIdCardLib:1.0.4'
 // 车牌识别
-implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.2'
+implementation 'com.shouzhong:ScannerLicensePlateLib:1.0.3'
 // 图片文字识别
 implementation 'com.shouzhong:ScannerTextLib:1.0.0'
 // 黄图识别
@@ -241,7 +241,7 @@ bitmapToNv21 | bitmap转nv21
 
 ## 怎么把我的整个项目导进去
 1. 该项目使用opencv-3.4.6，[点击下载](https://nchc.dl.sourceforge.net/project/opencvlibrary/3.4.6/opencv-3.4.6-android-sdk.zip)
-2. NDK版本r14b，r20编译不过去，[点击下载](https://links.jianshu.com/go?to=https%3A%2F%2Fdeveloper.android.google.cn%2Fndk%2Fdownloads%2Folder_releases.html)
+2. NDK版本r16
 3. 把licennseplate的CMakeLists.txt的第12行替换成自己的opencv-android-sdk的JNI路径
 4. 删除所有gradle里的 apply from: 'bintray.gradle'
 5. 删除bankcard的build.gradle里的android->externalNativeBuild以及android->defaultConfig->ndk和externalNativeBuild标签

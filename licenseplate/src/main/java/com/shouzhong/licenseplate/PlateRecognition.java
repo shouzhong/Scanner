@@ -2,10 +2,6 @@ package com.shouzhong.licenseplate;
 
 import android.graphics.Bitmap;
 
-/**
- * @auther : Aleyn
- * time   : 2019/04/24
- */
 public class PlateRecognition {
 
     static {
