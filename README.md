@@ -42,7 +42,7 @@ implementation 'com.shouzhong:ScannerTextLib:1.0.0'
 // 黄图识别
 implementation 'com.shouzhong:ScannerNsfwLib:1.0.0'
 // 驾驶证识别
-implementation 'com.shouzhong:ScannerDrivingLicenseLib:1.0.0'
+implementation 'com.shouzhong:ScannerDrivingLicenseLib:1.0.1'
 // 身份证识别（第二种方式）
 implementation 'com.shouzhong:ScannerIdCard2Lib:1.0.0'
 ```

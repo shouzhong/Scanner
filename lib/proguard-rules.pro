@@ -21,16 +21,16 @@
 #-renamesourcefileattribute SourceFile
 
 -dontwarn com.shouzhong.**
--keep class com.shouzhong.** {*;}
+-keep class com.shouzhong.* {*;}
 -dontwarn com.google.zxing.**
--keep class com.google.zxing.**
+-keep class com.google.zxing.*
 -dontwarn net.sourceforge.zbar.**
--keep class net.sourceforge.zbar.** {*;}
--keep class com.wintone.bankcard.** {*;}
+-keep class net.sourceforge.zbar.* {*;}
+-keep class com.wintone.bankcard.* {*;}
 -dontwarn com.wintone.bankcard.**
--keep class exocr.exocrengine.** {*;}
+-keep class exocr.exocrengine.* {*;}
 -dontwarn exocr.exocrengine.**
--keep class org.tensorflow.lite.** {*;}
+-keep class org.tensorflow.lite.* {*;}
 -dontwarn org.tensorflow.lite.**
--keep class com.ym.idcard.reg.** {*;}
+-keep class com.ym.idcard.reg.* {*;}
 -dontwarn com.ym.idcard.reg.**

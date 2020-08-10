@@ -41,7 +41,7 @@ public class DrivingLicenseUtils {
                 out.put("birth", birth);
             }
             out.put("firstIssue", o.optString("Issue"));
-            out.put("_class", o.optString("drivingType"));
+            out.put("_class", o.optString("DrivingType"));
             String valid = o.optString("RegisterDate");
             if (!TextUtils.isEmpty(valid)) {
                 valid = valid.replaceAll("[-| ]", "").replace("至", "-");
@@ -50,6 +50,5 @@ public class DrivingLicenseUtils {
             return out.toString();
         } catch (Exception e) {}
         return null;
-
     }
 }

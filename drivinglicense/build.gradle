@@ -19,6 +19,7 @@ android {
 dependencies {
 //    api project(":baseocr")
     api 'com.shouzhong:ScannerBaseOcrLib:1.0.0'
+    compileOnly 'com.blankj:utilcodex:1.29.0'
 }
 
 //发布 Jcenter
