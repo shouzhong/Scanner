@@ -23,7 +23,7 @@ QQ群 777891894（问题交流）
 ## 使用
 ### 依赖
 ```
-implementation 'com.shouzhong:Scanner:1.1.2'
+implementation 'com.shouzhong:Scanner:1.1.3'
 ```
 以下选择自己需要的
 ```
@@ -199,6 +199,8 @@ setCallback | 扫码成功后的回调
 setCameraDirection | 摄像头方向，后置为Camera.CameraInfo.CAMERA_FACING_BACK，前置为Camera.CameraInfo.CAMERA_FACING_FRONT
 setEnableZXing | 是否启用zxing识别器，默认false
 setEnableZBar | 是否启用zbar识别器，默认false
+setEnableQrcode | 是否启动二维码识别，默认true，只有在zxing或者zbar开启时有效
+setEnableBarcode | 是否启动条码识别，默认true，只有在zxing或者zbar开启时有效
 setEnableBankCard | 是否启用银行卡识别器，默认false
 setEnableIdCard | 是否启用身份证识别器，默认false
 setEnableIdCard2 | 是否启用身份证识别器（第二种方式），默认false

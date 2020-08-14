@@ -68,6 +68,8 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     private boolean isRotateDegree90Recognition = false;
     private boolean enableZXing = false;
     private boolean enableZBar = false;
+    private boolean enableQrcode = true;
+    private boolean enableBarcode = true;
     private boolean enableBankCard = false;
     private boolean enableIdCard = false;
     private boolean enableLicensePlate = false;
@@ -144,7 +146,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                     } catch (Exception e) {}
                 }
             }
-            if (enableZBar && result == null) {
+            if (enableZBar && result == null && (enableBarcode || enableQrcode)) {
                 try {
                     Image barcode = new Image(width, height, "Y800");
                     barcode.setData(tempData);
@@ -164,7 +166,7 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
                     }
                 } catch (Exception e) {}
             }
-            if (enableZXing && result == null) {
+            if (enableZXing && result == null && (enableBarcode || enableQrcode)) {
                 try {
                     PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(tempData, width, height, 0, 0, width, height, false);
                     String s = getMultiFormatReader().decode(new BinaryBitmap(new HybridBinarizer(source)), hints0).getText();
@@ -536,6 +538,28 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
     }
 
     /**
+     * 是否启用二维码识别
+     *
+     * @param boo
+     */
+    public void setEnableQrcode(boolean boo) {
+        if (boo == enableQrcode) return;
+        this.enableQrcode = boo;
+        hints0 = null;
+    }
+
+    /**
+     * 是否启用条码识别
+     *
+     * @param boo
+     */
+    public void setEnableBarcode(boolean boo) {
+        if (boo == enableBarcode) return;
+        this.enableBarcode = boo;
+        imageScanner = null;
+    }
+
+    /**
      * 是否使用银行卡识别
      *
      * @param boo
@@ -614,19 +638,27 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         if (hints0 == null) {
             hints0 = new HashMap<>();
             List<BarcodeFormat> decodeFormats = new ArrayList<>();
-            decodeFormats.add(BarcodeFormat.QR_CODE);
-            decodeFormats.add(BarcodeFormat.CODABAR);
-            decodeFormats.add(BarcodeFormat.CODE_39);
-            decodeFormats.add(BarcodeFormat.CODE_93);
-            decodeFormats.add(BarcodeFormat.CODE_128);
-            decodeFormats.add(BarcodeFormat.EAN_8);
-            decodeFormats.add(BarcodeFormat.EAN_13);
-            decodeFormats.add(BarcodeFormat.UPC_A);
-            decodeFormats.add(BarcodeFormat.UPC_E);
-            decodeFormats.add(BarcodeFormat.ITF);
-            decodeFormats.add(BarcodeFormat.RSS_14);
+            if (enableQrcode) {
+                decodeFormats.add(BarcodeFormat.QR_CODE);
+            }
+            if (enableBarcode) {
+                decodeFormats.add(BarcodeFormat.CODABAR);
+                decodeFormats.add(BarcodeFormat.CODE_39);
+                decodeFormats.add(BarcodeFormat.CODE_93);
+                decodeFormats.add(BarcodeFormat.CODE_128);
+                decodeFormats.add(BarcodeFormat.EAN_8);
+                decodeFormats.add(BarcodeFormat.EAN_13);
+                decodeFormats.add(BarcodeFormat.UPC_A);
+                decodeFormats.add(BarcodeFormat.UPC_E);
+                decodeFormats.add(BarcodeFormat.ITF);
+                decodeFormats.add(BarcodeFormat.RSS_14);
+            }
             hints0.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
-            hints0.put(DecodeHintType.TRY_HARDER, BarcodeFormat.QR_CODE);
+            if (enableQrcode) {
+                hints0.put(DecodeHintType.TRY_HARDER, BarcodeFormat.QR_CODE);
+            } else if (enableBarcode) {
+                hints0.put(DecodeHintType.TRY_HARDER, BarcodeFormat.CODE_128);
+            }
             hints0.put(DecodeHintType.CHARACTER_SET, "utf-8");
         }
         return multiFormatReader;
@@ -641,15 +673,19 @@ public class ScannerView extends FrameLayout implements Camera.PreviewCallback, 
         if (imageScanner == null) {
             imageScanner = new ImageScanner();
             imageScanner.setConfig(0, Config.ENABLE, 0);
-            imageScanner.setConfig(Symbol.QRCODE, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.CODABAR, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.CODE39, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.CODE93, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.CODE128, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.EAN8, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.EAN13, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.UPCA, Config.ENABLE, 1);
-            imageScanner.setConfig(Symbol.UPCE, Config.ENABLE, 1);
+            if (enableQrcode) {
+                imageScanner.setConfig(Symbol.QRCODE, Config.ENABLE, 1);
+            }
+            if (enableBarcode) {
+                imageScanner.setConfig(Symbol.CODABAR, Config.ENABLE, 1);
+                imageScanner.setConfig(Symbol.CODE39, Config.ENABLE, 1);
+                imageScanner.setConfig(Symbol.CODE93, Config.ENABLE, 1);
+                imageScanner.setConfig(Symbol.CODE128, Config.ENABLE, 1);
+                imageScanner.setConfig(Symbol.EAN8, Config.ENABLE, 1);
+                imageScanner.setConfig(Symbol.EAN13, Config.ENABLE, 1);
+                imageScanner.setConfig(Symbol.UPCA, Config.ENABLE, 1);
+                imageScanner.setConfig(Symbol.UPCE, Config.ENABLE, 1);
+            }
         }
         return imageScanner;
     }

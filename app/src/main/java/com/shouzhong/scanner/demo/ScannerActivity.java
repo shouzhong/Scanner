@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -26,16 +27,11 @@ public class ScannerActivity extends AppCompatActivity {
 
     private ScannerView scannerView;
     private TextView tvResult;
-    private SwitchCompat scDirection;
-    private SwitchCompat scZXing;
-    private SwitchCompat scZBar;
-    private SwitchCompat scBankCard;
-    private SwitchCompat scIdCard;
-    private SwitchCompat scLicensePlate;
-    private SwitchCompat scIdCard2;
-    private SwitchCompat scDrivingLicense;
+    private LinearLayout llQrcode;
+    private LinearLayout llBarcode;
 
     private Vibrator vibrator;
+    private int flag;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,17 +39,10 @@ public class ScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
         scannerView = findViewById(R.id.sv);
         tvResult = findViewById(R.id.tv_result);
-        scDirection = findViewById(R.id.sc_direction);
-        scZXing = findViewById(R.id.sc_zxing);
-        scZBar = findViewById(R.id.sc_zbar);
-        scBankCard = findViewById(R.id.sc_bank);
-        scIdCard = findViewById(R.id.sc_id_card);
-        scLicensePlate = findViewById(R.id.sc_license_plate);
-        scIdCard2 = findViewById(R.id.sc_id_card2);
-        scDrivingLicense = findViewById(R.id.sc_driving_license);
+        llQrcode = findViewById(R.id.ll_qrcode);
+        llBarcode = findViewById(R.id.ll_barcode);
         scannerView.setShouldAdjustFocusArea(true);
         scannerView.setViewFinder(new ViewFinder(this));
-//        scannerView.setViewFinder(new ViewFinder2());
         scannerView.setSaveBmp(false);
         scannerView.setRotateDegree90Recognition(true);
         scannerView.setCallback(new Callback() {
@@ -64,7 +53,7 @@ public class ScannerActivity extends AppCompatActivity {
                 scannerView.restartPreviewAfterDelay(2000);
             }
         });
-        scDirection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_direction)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.onPause();
@@ -72,43 +61,61 @@ public class ScannerActivity extends AppCompatActivity {
                 scannerView.onResume();
             }
         });
-        scZXing.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_zxing)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableZXing(isChecked);
+                if (isChecked) flag |= 0b1; else flag &= 0b10;
+                llQrcode.setVisibility(flag == 0 ? View.GONE : View.VISIBLE);
+                llBarcode.setVisibility(flag == 0 ? View.GONE : View.VISIBLE);
             }
         });
-        scZBar.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_zbar)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableZBar(isChecked);
+                if (isChecked) flag |= 0b10; else flag &= 0b1;
+                llQrcode.setVisibility(flag == 0 ? View.GONE : View.VISIBLE);
+                llBarcode.setVisibility(flag == 0 ? View.GONE : View.VISIBLE);
             }
         });
-        scBankCard.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_qrcode)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                scannerView.setEnableQrcode(isChecked);
+            }
+        });
+        ((SwitchCompat) findViewById(R.id.sc_barcode)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                scannerView.setEnableBarcode(isChecked);
+            }
+        });
+        ((SwitchCompat) findViewById(R.id.sc_bank)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableBankCard(isChecked);
             }
         });
-        scIdCard.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_id_card)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableIdCard(isChecked);
             }
         });
-        scLicensePlate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_license_plate)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableLicensePlate(isChecked);
             }
         });
-        scIdCard2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_id_card2)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableIdCard2(isChecked);
             }
         });
-        scDrivingLicense.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ((SwitchCompat) findViewById(R.id.sc_driving_license)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 scannerView.setEnableDrivingLicense(isChecked);
