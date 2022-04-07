@@ -18,7 +18,7 @@ QQ群 777891894（问题交流，答案：android）
     </tr>
 </table>
 
-## [下载 apk-demo](http://downgit.zhoudaxiaa.com/#/home?url=https://github.com/shouzhong/Scanner/blob/master/app/release/app-release.apk)
+## [下载 apk-demo](https://github.com/shouzhong/Scanner/releases/download/demo/scanner-debug.apk)
 
 ## 使用
 ### 依赖
